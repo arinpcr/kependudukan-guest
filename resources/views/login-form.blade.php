@@ -110,7 +110,7 @@
 </head>
 <body>
     <div class="login-box">
-        <h2>Login Guest</h2>
+        <h2>Login untuk Guest</h2>
 
         @if(session('error'))
             <p class="error">{{ session('error') }}</p>
