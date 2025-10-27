@@ -19,7 +19,7 @@ class KeluargaKkController extends Controller
                             ->orderBy('kk_nomor', 'asc')
                             ->paginate(10);
         
-        return view('keluarga.index', compact('keluarga'));
+        return view('guest.keluarga.index', compact('keluarga'));
     }
 
     /**
@@ -30,7 +30,7 @@ class KeluargaKkController extends Controller
         // Kita perlu mengambil daftar warga untuk dijadikan pilihan Kepala Keluarga
         $warga = Warga::orderBy('nama', 'asc')->get();
         
-        return view('keluarga.create', compact('warga'));
+        return view('guest.keluarga.create', compact('warga'));
     }
 
     /**
@@ -65,7 +65,7 @@ class KeluargaKkController extends Controller
         // Kita bisa muat relasinya jika perlu
         $keluarga->load('kepalaKeluarga');
         
-        return view('keluarga.show', compact('keluarga'));
+        return view('guest.keluarga.show', compact('keluarga')); // Perbaiki path view
     }
 
     /**
@@ -78,7 +78,7 @@ class KeluargaKkController extends Controller
         // Kita juga perlu daftar warga untuk dropdown
         $warga = Warga::orderBy('nama', 'asc')->get();
         
-        return view('keluarga.edit', compact('keluarga', 'warga'));
+        return view('guest.keluarga.edit', compact('keluarga', 'warga'));
     }
 
     /**

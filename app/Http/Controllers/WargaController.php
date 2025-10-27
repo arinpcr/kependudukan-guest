@@ -16,7 +16,7 @@ class WargaController extends Controller
         $warga = Warga::orderBy('nama', 'asc')->paginate(10);
         
         // Kirim data ke view 'warga.index'
-        return view('warga.index', compact('warga'));
+        return view('guest.warga.index', compact('warga'));
     }
 
     /**
@@ -24,7 +24,7 @@ class WargaController extends Controller
      */
     public function create()
     {
-       return view('warga.create', [
+       return view('guest.warga.create', [
         'warga' => new Warga() // Kirim model Warga yang baru (kosong)
     ]);
     }
@@ -70,7 +70,7 @@ class WargaController extends Controller
     public function edit($id)
     {
        $warga = Warga::find($id); // Ambil data
-    return view('warga.edit', ['warga' => $warga]); // Kirim data
+    return view('guest.warga.edit', ['warga' => $warga]); // Kirim data
     }
 
     /**
@@ -96,6 +96,7 @@ class WargaController extends Controller
     return redirect()->route('warga.index')
                         ->with('success', 'Data warga berhasil diperbarui.');
 }
+
     /**
      * Remove the specified resource from storage.
      */
@@ -103,6 +104,12 @@ class WargaController extends Controller
 {
     // TAMBAHKAN BARIS INI:
     $warga = Warga::find($id); 
+    
+    // Jika data tidak ditemukan
+    if (!$warga) {
+        return redirect()->route('warga.index')
+                        ->with('error', 'Data warga tidak ditemukan.');
+    }
     
     // Hapus data warga
     $warga->delete();
