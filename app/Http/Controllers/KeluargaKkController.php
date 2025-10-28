@@ -15,11 +15,11 @@ class KeluargaKkController extends Controller
     {
         // Ambil data KK, muat relasi 'kepalaKeluarga' (untuk mengambil nama)
         // 'with('kepalaKeluarga')' -> Mencegah N+1 problem
-        $keluarga = KeluargaKk::with('kepalaKeluarga') 
+        $keluarga = KeluargaKk::with('kepalaKeluarga')
                             ->orderBy('kk_nomor', 'asc')
                             ->paginate(10);
-        
-        return view('guest.keluarga.index', compact('keluarga'));
+
+        return view('pages.keluarga.index', compact('keluarga'));
     }
 
     /**
@@ -29,8 +29,8 @@ class KeluargaKkController extends Controller
     {
         // Kita perlu mengambil daftar warga untuk dijadikan pilihan Kepala Keluarga
         $warga = Warga::orderBy('nama', 'asc')->get();
-        
-        return view('guest.keluarga.create', compact('warga'));
+
+        return view('pages.keluarga.create', compact('warga'));
     }
 
     /**
@@ -64,8 +64,8 @@ class KeluargaKkController extends Controller
         // Data $keluarga sudah otomatis diambil Laravel
         // Kita bisa muat relasinya jika perlu
         $keluarga->load('kepalaKeluarga');
-        
-        return view('guest.keluarga.show', compact('keluarga')); // Perbaiki path view
+
+        return view('pages.keluarga.show', compact('keluarga')); // Perbaiki path view
     }
 
     /**
@@ -74,11 +74,11 @@ class KeluargaKkController extends Controller
     public function edit(KeluargaKk $keluarga)
     {
         // Data $keluarga sudah otomatis diambil
-        
+
         // Kita juga perlu daftar warga untuk dropdown
         $warga = Warga::orderBy('nama', 'asc')->get();
-        
-        return view('guest.keluarga.edit', compact('keluarga', 'warga'));
+
+        return view('pages.keluarga.edit', compact('keluarga', 'warga'));
     }
 
     /**

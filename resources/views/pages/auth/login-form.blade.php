@@ -308,7 +308,7 @@
             <h2>Login Guest</h2>
             <small>Sistem Kependudukan</small>
         </div>
-        
+
         <div class="login-body">
             <a href="{{ url('dashboard-guest') }}" class="back-link">
                 <i class="fas fa-arrow-left"></i> Kembali ke Beranda
@@ -345,10 +345,21 @@
 
             <form action="{{ route('login') }}" method="POST">
                 @csrf
-                
+
+                 <div class="form-floating">
+                    <input type="username" class="form-control @error('username') is-invalid @enderror"
+                           name="username" id="username" placeholder="username" required>
+                    <label for="username">
+                        <i class="fas fa-lock me-2 text-primary"></i>Username
+                    </label>
+                    @error('username')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <div class="form-floating">
-                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                           name="email" id="email" value="{{ old('email') }}" 
+                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                           name="email" id="email" value="{{ old('email') }}"
                            placeholder="name@example.com" required>
                     <label for="email">
                         <i class="fas fa-envelope me-2 text-primary"></i>Email
@@ -359,7 +370,7 @@
                 </div>
 
                 <div class="form-floating">
-                    <input type="password" class="form-control @error('password') is-invalid @enderror" 
+                    <input type="password" class="form-control @error('password') is-invalid @enderror"
                            name="password" id="password" placeholder="Password" required>
                     <label for="password">
                         <i class="fas fa-lock me-2 text-primary"></i>Password

@@ -16,7 +16,7 @@
             </div>
             <div class="col-lg-5 col-md-12">
                 <div class="position-relative">
-                    
+
                     <div class="position-absolute top-0 start-0 w-100 h-100 bg-pattern-3 rounded"></div>
                 </div>
             </div>
@@ -83,7 +83,7 @@
             <h4 class="text-primary mb-4 border-bottom border-primary border-2 d-inline-block p-2 title-border-radius">Statistik Data</h4>
             <h1 class="mb-5 display-3">Data Kependudukan</h1>
         </div>
-        
+
         <!-- Main Statistics Carousel -->
         <div class="testimonial-carousel owl-carousel wow fadeIn" data-wow-delay="0.3s">
             <!-- Kartu Keluarga -->
@@ -241,6 +241,13 @@
 </div>
 <!-- Statistics End -->
 
+
+<!-- Floating WhatsApp Button -->
+<a href="https://wa.me/6281234567890?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20Sistem%20Kependudukan."
+   class="whatsapp-float" target="_blank" rel="noopener" title="Hubungi kami di WhatsApp">
+    <i class="fab fa-whatsapp"></i>
+</a>
+
 @endsection
 
 @push('styles')
@@ -249,31 +256,31 @@
     .testimonial-carousel .owl-stage {
         padding: 20px 0;
     }
-    
+
     .testimonial-item {
         transition: transform 0.3s ease, box-shadow 0.3s ease;
         margin: 10px;
     }
-    
+
     .testimonial-item:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.1);
     }
-    
+
     .border-primary {
         border-color: var(--bs-primary) !important;
     }
-    
+
     .display-4 {
         font-weight: 700;
         font-family: 'Fredoka', sans-serif;
     }
-    
+
     .display-6 {
         font-weight: 600;
         font-family: 'Fredoka', sans-serif;
     }
-    
+
     /* Owl Carousel Dots */
     .testimonial-carousel .owl-dots {
         margin-top: 30px;
@@ -281,7 +288,7 @@
         align-items: center;
         justify-content: center;
     }
-    
+
     .testimonial-carousel .owl-dot {
         position: relative;
         display: inline-block;
@@ -292,10 +299,43 @@
         border-radius: 10px;
         transition: 0.5s;
     }
-    
+
     .testimonial-carousel .owl-dot.active {
         width: 30px;
         background: var(--bs-secondary);
+    }
+
+    /* Floating WhatsApp Button */
+    .whatsapp-float {
+        position: fixed;
+        width: 60px;
+        height: 60px;
+        bottom: 25px;
+        right: 25px;
+        background-color: #25D366;
+        color: #fff;
+        border-radius: 50%;
+        text-align: center;
+        font-size: 30px;
+        box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        animation: bounceIn 0.8s ease;
+    }
+
+    .whatsapp-float:hover {
+        background-color: #20ba5a;
+        transform: scale(1.1);
+        box-shadow: 4px 4px 15px rgba(0,0,0,0.4);
+    }
+
+    @keyframes bounceIn {
+        0% { transform: scale(0.5); opacity: 0; }
+        60% { transform: scale(1.2); opacity: 1; }
+        100% { transform: scale(1); }
     }
 </style>
 @endpush
@@ -304,48 +344,20 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" />
-
 <script>
-    $(document).ready(function() {
-        console.log('Home page loaded with carousel statistics');
-        
-        // Initialize Owl Carousel
-        $('.testimonial-carousel').owlCarousel({
-            loop: true,
-            margin: 20,
-            nav: false,
-            dots: true,
-            autoplay: true,
-            autoplayTimeout: 4000,
-            autoplayHoverPause: true,
-            responsive: {
-                0: {
-                    items: 1
-                },
-                576: {
-                    items: 1
-                },
-                768: {
-                    items: 2
-                },
-                992: {
-                    items: 3
-                },
-                1200: {
-                    items: 3
-                }
-            }
-        });
-
-        // Add hover effects for statistics cards
-        $('.testimonial-item').hover(
-            function() {
-                $(this).addClass('shadow-lg');
-            },
-            function() {
-                $(this).removeClass('shadow-lg');
-            }
-        );
+    $('.testimonial-carousel').owlCarousel({
+        autoplay: true,
+        smartSpeed: 800,
+        margin: 30,
+        loop: true,
+        dots: true,
+        nav: false,
+        responsive: {
+            0: { items: 1 },
+            768: { items: 2 },
+            992: { items: 3 },
+            1200: { items: 4 }
+        }
     });
 </script>
 @endpush

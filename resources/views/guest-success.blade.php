@@ -49,7 +49,7 @@
 <body>
     <div class="success-box">
         <h2>Login Berhasil!</h2>
-        <p>Selamat datang, <b>{{ $username }}</b> 🎉</p>
+        <p>Selamat datang, <b>{{ $email }}</b> 🎉</p>
         <p class="loading">Mengalihkan ke dashboard...</p>
     </div>
 </body>

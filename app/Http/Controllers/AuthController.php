@@ -15,7 +15,7 @@ class AuthController extends Controller
      */
     public function showLoginForm()
     {
-        return view('auth.login-form');
+        return view('pages.auth.login-form');
     }
 
     /**
@@ -23,7 +23,7 @@ class AuthController extends Controller
      */
     public function showRegistrationForm()
     {
-        return view('auth.register');
+        return view('pages.auth.register');
     }
 
     /**
@@ -54,7 +54,7 @@ class AuthController extends Controller
 
         // Pengecekan login user terdaftar
         $credentials = $this->getCredentials($request);
-        
+
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             return redirect()->intended('/dashboard');
@@ -130,10 +130,14 @@ class AuthController extends Controller
      * Display success page after login
      */
     public function success()
-    {
-        $email = session('email');
-        return view('guest-success', compact('email'));
-    }
+{
+    $email = session('email');
+
+    // Jika ingin menampilkan username, bisa extract dari email
+    $username = explode('@', $email)[0];
+
+    return view('guest-success', compact('email', 'username'));
+}
 
     /**
      * Get credentials for authentication

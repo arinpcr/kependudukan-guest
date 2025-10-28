@@ -25,8 +25,8 @@
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav mx-auto">
                     <a href="{{ route('dashboard') }}" class="nav-item nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">Home</a>
-                    <a href="#" class="nav-item nav-link">Tentang</a>
                     
+
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Data</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -36,7 +36,7 @@
                             <a href="{{ route('dashboard') }}" class="dropdown-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
                         </div>
                     </div>
-                    
+
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Tambah Data</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -45,11 +45,11 @@
                             <a href="{{ route('user.create') }}" class="dropdown-item {{ request()->routeIs('user.create') ? 'active' : '' }}">Tambah User</a>
                         </div>
                     </div>
-                    
+
                     <a href="{{ url('/auth/success') }}" class="nav-item nav-link {{ request()->is('auth/success') ? 'active' : '' }}">Status Pengajuan</a>
                     <a href="#" class="nav-item nav-link">Kontak</a>
                 </div>
-                
+
                 <div class="d-flex me-4">
                     <div id="phone-tada" class="d-flex align-items-center justify-content-center">
                         <a href="#" class="position-relative wow tada" data-wow-delay=".9s">
@@ -64,7 +64,7 @@
                         <a href="#"><span class="text-secondary">Telp: + 0123 456 7890</span></a>
                     </div>
                 </div>
-                
+
                 <!-- Auth Section -->
                 <div class="d-flex align-items-center">
                     @auth
@@ -112,3 +112,6 @@
     </div>
 </div>
 <!-- Navbar End -->
+
+
+

@@ -13,7 +13,7 @@
         <div class="row justify-content-center wow fadeIn" data-wow-delay="0.3s">
             <div class="col-12">
                 <div class="bg-light border border-primary rounded p-5">
-                    
+
                     @if (session('success'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <strong><i class="fas fa-check-circle me-2"></i>Sukses!</strong>
@@ -26,7 +26,7 @@
                         <a href="{{ route('user.create') }}" class="btn btn-primary">
                             <i class="fas fa-plus me-2"></i>Tambah User Baru
                         </a>
-                        
+
                         <div class="text-muted">
                             <i class="fas fa-info-circle me-2 text-primary"></i>
                             Total Data: <strong>{{ $dataUser->count() }}</strong>
@@ -52,7 +52,15 @@
                                         </div>
                                         <p class="ms-4 mb-0">{{ $item->email }}</p>
                                     </div>
-                                    
+
+                                    <div class="mb-3">
+                                        <div class="d-flex align-items-center mb-2">
+                                            <i class="fas fa-lock me-2 text-primary"></i>
+                                            <span class="fw-bold">Password:</span>
+                                        </div>
+                                        <p class="ms-4 mb-0">••••••••</p>
+                                    </div>
+
                                     <div class="mb-3">
                                         <div class="d-flex align-items-center mb-2">
                                             <i class="fas fa-calendar me-2 text-primary"></i>
@@ -63,18 +71,18 @@
                                 </div>
                                 <div class="card-footer bg-transparent border-top-0">
                                     <div class="d-flex justify-content-between">
-                                        <a href="{{ route('user.edit', $item->id) }}" 
-                                           class="btn btn-warning btn-sm" 
-                                           data-bs-toggle="tooltip" 
+                                        <a href="{{ route('user.edit', $item->id) }}"
+                                           class="btn btn-warning btn-sm"
+                                           data-bs-toggle="tooltip"
                                            title="Edit Data">
                                             <i class="fas fa-edit me-1"></i>Edit
                                         </a>
                                         <form action="{{ route('user.destroy', $item->id) }}" method="POST" class="d-inline">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" 
-                                                    class="btn btn-danger btn-sm" 
-                                                    data-bs-toggle="tooltip" 
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm"
+                                                    data-bs-toggle="tooltip"
                                                     title="Hapus Data"
                                                     onclick="return confirm('Apakah Anda yakin ingin menghapus user ini?')">
                                                 <i class="fas fa-trash me-1"></i>Hapus

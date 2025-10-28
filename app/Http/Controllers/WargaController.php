@@ -14,9 +14,9 @@ class WargaController extends Controller
     {
         // Ambil semua data warga, urutkan berdasarkan nama, dan buat pagination
         $warga = Warga::orderBy('nama', 'asc')->paginate(10);
-        
+
         // Kirim data ke view 'warga.index'
-        return view('guest.warga.index', compact('warga'));
+        return view('pages.warga.index', compact('warga'));
     }
 
     /**
@@ -24,7 +24,7 @@ class WargaController extends Controller
      */
     public function create()
     {
-       return view('guest.warga.create', [
+       return view('pages.warga.create', [
         'warga' => new Warga() // Kirim model Warga yang baru (kosong)
     ]);
     }
@@ -59,8 +59,8 @@ class WargaController extends Controller
     public function show(string $id)
     {
         // TAMBAHKAN BARIS INI:
-    $warga = Warga::find($id); 
-    
+    $warga = Warga::find($id);
+
     return view('warga.show', compact('warga'));
     }
 
@@ -70,7 +70,7 @@ class WargaController extends Controller
     public function edit($id)
     {
        $warga = Warga::find($id); // Ambil data
-    return view('guest.warga.edit', ['warga' => $warga]); // Kirim data
+    return view('pages.warga.edit', ['warga' => $warga]); // Kirim data
     }
 
     /**
@@ -79,7 +79,7 @@ class WargaController extends Controller
     public function update(Request $request, string $id)
 {
     // TAMBAHKAN BARIS INI:
-    $warga = Warga::find($id); 
+    $warga = Warga::find($id);
 
     // 1. Validasi input form
     $request->validate([
@@ -103,14 +103,14 @@ class WargaController extends Controller
     public function destroy(string $id)
 {
     // TAMBAHKAN BARIS INI:
-    $warga = Warga::find($id); 
-    
+    $warga = Warga::find($id);
+
     // Jika data tidak ditemukan
     if (!$warga) {
         return redirect()->route('warga.index')
                         ->with('error', 'Data warga tidak ditemukan.');
     }
-    
+
     // Hapus data warga
     $warga->delete();
 
