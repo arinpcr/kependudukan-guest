@@ -573,15 +573,15 @@ h6,
 
 .program .program-item .program-img .program-rate {
     position: absolute;
-    width: 100px; 
-    top: -20px; 
-    left: 50%; 
-    margin-left: -50px; 
+    width: 100px;
+    top: -20px;
+    left: 50%;
+    margin-left: -50px;
     border-radius: 10% / 50%;
 }
 
 .program .program-item .program-text {
-    padding-top: 150px; 
+    padding-top: 150px;
     margin-top: -125px;
 }
 
@@ -612,16 +612,16 @@ h6,
 
 .events .events-item .events-inner .events-rate {
     position: absolute;
-    width: 120px; 
-    top: -20px; 
-    left: 50%; 
-    margin-left: -60px; 
+    width: 120px;
+    top: -20px;
+    left: 50%;
+    margin-left: -60px;
     border-radius: 10% / 50%;
 }
 
 .events .events-item .events-inner .events-img .event-overlay {
     position: absolute;
-    top: 50%; 
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     transition: 0.5s;
@@ -686,7 +686,7 @@ h6,
 }
 
 .blog .blog-item .blog-date-comments {
-    padding-top: 150px !important; 
+    padding-top: 150px !important;
     margin-top: -125px;
 }
 
@@ -757,7 +757,7 @@ h6,
 /*** testimonial Start ***/
 .testimonial .testimonial-carousel {
     position: relative;
-    
+
 }
 
 .testimonial .testimonial-carousel .owl-dots {
@@ -795,7 +795,7 @@ h6,
 
 .footer .footer-galary-img img {
     width: 100%;
-    border-style: dotted; 
+    border-style: dotted;
     border-color: var(--bs-primary);
     transition: 0.5s;
 }
@@ -817,12 +817,12 @@ h6,
         min-height: 60vh;
         text-align: center;
     }
-    
+
     .hero-header .display-1,
     .page-header .display-1 {
         font-size: 2.5rem;
     }
-    
+
     .img-border-radius {
         border-radius: 20% 10% / 5% 20%;
     }
@@ -833,12 +833,12 @@ h6,
     .page-header {
         min-height: 50vh;
     }
-    
+
     .hero-header .display-1,
     .page-header .display-1 {
         font-size: 2rem;
     }
-    
+
     .testimonial-item {
         margin-bottom: 20px;
     }
@@ -859,3 +859,82 @@ h6,
                 radial-gradient(circle at bottom left, rgba(77,101,249,0.1), transparent 50%);
 }
 /*** Background Patterns End ***/
+
+
+/*** Fix untuk Navbar Layout Konsisten ***/
+.navbar-nav.mx-auto {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+}
+
+/* Pastikan semua nav-item memiliki width yang konsisten */
+.navbar-nav .nav-item {
+    flex-shrink: 0 !important;
+    margin: 0 2px !important;
+}
+
+.navbar-nav .nav-link {
+    white-space: nowrap !important;
+    padding: 8px 12px !important;
+}
+
+/* Pastikan dropdown tidak menggeser layout */
+.nav-item.dropdown .dropdown-menu {
+    position: absolute !important;
+}
+
+/* Info kontak tetap di posisi yang sama */
+.navbar-nav .d-flex.me-4 {
+    margin-left: auto !important;
+    margin-right: 20px !important;
+    flex-shrink: 0 !important;
+}
+
+/* Auth section tetap di posisi yang sama */
+.d-flex.align-items-center {
+    flex-shrink: 0 !important;
+}
+
+/* Pastikan user dropdown tidak terlalu panjang */
+.nav-item.dropdown .nav-link.dropdown-toggle {
+    max-width: 180px !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1200px) {
+    .navbar-nav.mx-auto {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+
+    .navbar-nav .d-flex.me-4 {
+        order: 2 !important;
+        margin: 10px auto !important;
+    }
+}
+
+@media (max-width: 991.98px) {
+    .navbar-collapse {
+        text-align: center !important;
+    }
+
+    .navbar-nav .nav-item {
+        width: 100% !important;
+        margin: 5px 0 !important;
+    }
+
+    .navbar-nav .d-flex.me-4 {
+        order: 2 !important;
+        margin: 15px auto !important;
+        justify-content: center !important;
+    }
+
+    .d-flex.align-items-center {
+        order: 1 !important;
+        justify-content: center !important;
+        margin: 10px 0 !important;
+    }
+}

@@ -16,7 +16,7 @@
     </div>
     <div class="container px-0">
         <nav class="navbar navbar-light navbar-expand-xl py-3">
-            <a href="{{ route('dashboard') }}" class="navbar-brand">
+            <a href="{{ url('/') }}" class="navbar-brand">
                 <h1 class="text-primary display-6">Kependudukan</h1>
             </a>
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
@@ -24,19 +24,30 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav mx-auto">
-                    <a href="{{ route('dashboard') }}" class="nav-item nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">Home</a>
-                    
+                    <!-- Menu Home & About - Sama untuk semua -->
+                    <a href="{{ url('/') }}" class="nav-item nav-link {{ request()->is('/') ? 'active' : '' }}">Home</a>
+                    <a href="{{ route('about') }}" class="nav-item nav-link {{ request()->routeIs('about') ? 'active' : '' }}">About</a>
 
+                    <!-- Menu Data - Berubah berdasarkan login status -->
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Data</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                            <a href="{{ route('warga.index') }}" class="dropdown-item {{ request()->routeIs('warga.index') ? 'active' : '' }}">Data Warga</a>
-                            <a href="{{ route('keluarga.index') }}" class="dropdown-item {{ request()->routeIs('keluarga.index') ? 'active' : '' }}">Data Keluarga</a>
-                            <a href="{{ route('user.index') }}" class="dropdown-item {{ request()->routeIs('user.index') ? 'active' : '' }}">Data User</a>
-                            <a href="{{ route('dashboard') }}" class="dropdown-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a>
+                            @auth
+                                <!-- Menu Data untuk user yang sudah login -->
+                                {{-- <a href="{{ route('dashboard') }}" class="dropdown-item {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a> --}}
+                                <a href="{{ route('warga.index') }}" class="dropdown-item {{ request()->routeIs('warga.index') ? 'active' : '' }}">Data Warga</a>
+                                <a href="{{ route('keluarga.index') }}" class="dropdown-item {{ request()->routeIs('keluarga.index') ? 'active' : '' }}">Data Keluarga</a>
+                                <a href="{{ route('user.index') }}" class="dropdown-item {{ request()->routeIs('user.index') ? 'active' : '' }}">Data User</a>
+                            @else
+                                <!-- Menu Data untuk guest -->
+                                <a href="{{ route('warga.index') }}" class="dropdown-item {{ request()->routeIs('warga.index') ? 'active' : '' }}">Data Warga</a>
+                                <a href="{{ route('keluarga.index') }}" class="dropdown-item {{ request()->routeIs('keluarga.index') ? 'active' : '' }}">Data Keluarga</a>
+                            @endauth
                         </div>
                     </div>
 
+                    <!-- Menu Tambah Data - Hanya untuk user login -->
+                    @auth
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Tambah Data</a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
@@ -46,45 +57,65 @@
                         </div>
                     </div>
 
-                    <a href="{{ url('/auth/success') }}" class="nav-item nav-link {{ request()->is('auth/success') ? 'active' : '' }}">Status Pengajuan</a>
+                    {{-- <a href="{{ url('/auth/success') }}" class="nav-item nav-link {{ request()->is('auth/success') ? 'active' : '' }}">Status Pengajuan</a> --}}
+                    @endauth
+
+                    <!-- Menu Kontak - Sama untuk semua -->
                     <a href="#" class="nav-item nav-link">Kontak</a>
+
+                    <!-- Info Kontak - Tetap di posisi yang sama -->
+                    <div class="d-flex me-4">
+                        <div id="phone-tada" class="d-flex align-items-center justify-content-center">
+                            <a href="#" class="position-relative wow tada" data-wow-delay=".9s">
+                                <i class="fa fa-phone-alt text-primary fa-2x me-4"></i>
+                                <div class="position-absolute" style="top: -7px; left: 20px;">
+                                    <span><i class="fa fa-comment-dots text-secondary"></i></span>
+                                </div>
+                            </a>
+                        </div>
+                        <div class="d-flex flex-column pe-10 border-primary mr-2">
+                            <span class="text-primary">Punya Pertanyaan?</span>
+                            <a href="#"><span class="text-secondary">Telp: + 0123 456 7890</span></a>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="d-flex me-4">
-                    <div id="phone-tada" class="d-flex align-items-center justify-content-center">
-                        <a href="#" class="position-relative wow tada" data-wow-delay=".9s">
-                            <i class="fa fa-phone-alt text-primary fa-2x me-4"></i>
-                            <div class="position-absolute" style="top: -7px; left: 20px;">
-                                <span><i class="fa fa-comment-dots text-secondary"></i></span>
-                            </div>
-                        </a>
-                    </div>
-                    <div class="d-flex flex-column pe-3 border-end border-primary">
-                        <span class="text-primary">Punya Pertanyaan?</span>
-                        <a href="#"><span class="text-secondary">Telp: + 0123 456 7890</span></a>
-                    </div>
-                </div>
-
-                <!-- Auth Section -->
+                <!-- Auth Section - Berubah tombol/login -->
                 <div class="d-flex align-items-center">
                     @auth
+                        <!-- User sudah login - tampilkan dropdown user -->
                         <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                                <i class="fas fa-user me-2"></i>{{ Auth::user()->name }}
+                            <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
+                                <i class="fas fa-user-circle me-2"></i>
+                                {{ Auth::user()->name }}
                             </a>
                             <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                                <a href="{{ route('dashboard') }}" class="dropdown-item">Dashboard</a>
-                                <form method="POST" action="{{ route('logout') }}">
+                                <a href="{{ route('dashboard') }}" class="dropdown-item">
+                                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                                </a>
+                                <a href="#" class="dropdown-item">
+                                    <i class="fas fa-user me-2"></i>Profile
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <form method="POST" action="{{ route('logout') }}" class="d-inline">
                                     @csrf
-                                    <button type="submit" class="dropdown-item">Logout</button>
+                                    <button type="submit" class="dropdown-item border-0 bg-transparent">
+                                        <i class="fas fa-sign-out-alt me-2"></i>Logout
+                                    </button>
                                 </form>
                             </div>
                         </div>
                     @else
-                        <a href="{{ url('/auth') }}" class="btn btn-primary btn-sm rounded-pill px-3">
+                        <!-- User belum login - tampilkan tombol login/register -->
+                        <a href="{{ route('login') }}" class="btn btn-primary btn-sm rounded-pill px-3 me-2">
                             <i class="fas fa-sign-in-alt me-2"></i>Login
                         </a>
+                        <a href="{{ route('register') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
+                            <i class="fas fa-user-plus me-2"></i>Register
+                        </a>
                     @endauth
+
+                    <!-- Search Button - Tetap sama -->
                     <button class="btn-search btn btn-primary btn-md-square rounded-circle ms-2" data-bs-toggle="modal" data-bs-target="#searchModal">
                         <i class="fas fa-search text-white"></i>
                     </button>
@@ -112,6 +143,3 @@
     </div>
 </div>
 <!-- Navbar End -->
-
-
-

@@ -24,14 +24,6 @@
     <!-- Header -->
     @include('layouts.guest.header')
 
-    <!-- ✅ Navigasi tambahan untuk halaman “About” -->
-    <nav class="text-center py-2" style="background-color:#ffe6f0;">
-        <a href="{{ route('about') }}"
-           style="color:#ff4081; text-decoration:none; font-weight:600; font-size:16px;">
-           <i class="fa-solid fa-circle-info me-1"></i> Tentang Sistem
-        </a>
-    </nav>
-
     <!-- Main Content -->
     <main>
         @yield('content')
