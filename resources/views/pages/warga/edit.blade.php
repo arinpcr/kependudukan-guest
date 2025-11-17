@@ -29,11 +29,9 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
                     @endif
-
-                    <form action="{{ route('warga.update', $warga->warga_id) }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        
+<form action="{{ route('warga.update', $warga) }}" method="POST">
+    @csrf
+    @method('PUT')
                         <div class="row g-4">
                             <div class="col-12">
                                 <div class="form-floating">

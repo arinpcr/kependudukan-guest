@@ -10,13 +10,54 @@ class WargaController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Ambil semua data warga, urutkan berdasarkan nama, dan buat pagination
-        $warga = Warga::orderBy('nama', 'asc')->paginate(10);
+        // Query dasar
+        $query = Warga::query();
 
-        // Kirim data ke view 'warga.index'
-        return view('pages.warga.index', compact('warga'));
+        // Pencarian
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                  ->orWhere('no_ktp', 'like', '%' . $search . '%')
+                  ->orWhere('agama', 'like', '%' . $search . '%')
+                  ->orWhere('pekerjaan', 'like', '%' . $search . '%')
+                  ->orWhere('telp', 'like', '%' . $search . '%')
+                  ->orWhere('email', 'like', '%' . $search . '%');
+            });
+        }
+
+        // Filter jenis kelamin
+        if ($request->has('jenis_kelamin') && $request->jenis_kelamin != '') {
+            $query->where('jenis_kelamin', $request->jenis_kelamin);
+        }
+
+        // Sorting
+        if ($request->has('sort')) {
+            switch ($request->sort) {
+                case 'nama_desc':
+                    $query->orderBy('nama', 'desc');
+                    break;
+                case 'terbaru':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+                case 'terlama':
+                    $query->orderBy('created_at', 'asc');
+                    break;
+                default:
+                    $query->orderBy('nama', 'asc');
+                    break;
+            }
+        } else {
+            $query->orderBy('nama', 'asc');
+        }
+
+        // Pagination
+        $perPage = $request->has('per_page') ? $request->per_page : 12;
+        $warga = $query->paginate($perPage);
+
+        return view('pages.warga.index', compact('warga'))->with('request', $request);
     }
 
     /**
@@ -24,9 +65,9 @@ class WargaController extends Controller
      */
     public function create()
     {
-       return view('pages.warga.create', [
-        'warga' => new Warga() // Kirim model Warga yang baru (kosong)
-    ]);
+        return view('pages.warga.create', [
+            'warga' => new Warga()
+        ]);
     }
 
     /**
@@ -34,7 +75,6 @@ class WargaController extends Controller
      */
     public function store(Request $request)
     {
-        // 1. Validasi input form
         $request->validate([
             'no_ktp' => 'required|string|max:20|unique:warga,no_ktp',
             'nama' => 'required|string|max:100',
@@ -45,10 +85,8 @@ class WargaController extends Controller
             'email' => 'nullable|email|max:100',
         ]);
 
-        // 2. Jika validasi berhasil, simpan data ke database
         Warga::create($request->all());
 
-        // 3. Redirect kembali ke halaman index dengan pesan sukses
         return redirect()->route('warga.index')
                          ->with('success', 'Data warga berhasil ditambahkan.');
     }
@@ -56,66 +94,48 @@ class WargaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Warga $warga)
     {
-        // TAMBAHKAN BARIS INI:
-    $warga = Warga::find($id);
-
-    return view('warga.show', compact('warga'));
+        return view('pages.warga.show', compact('warga'));
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Warga $warga)
     {
-       $warga = Warga::find($id); // Ambil data
-    return view('pages.warga.edit', ['warga' => $warga]); // Kirim data
+        return view('pages.warga.edit', compact('warga'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-{
-    // TAMBAHKAN BARIS INI:
-    $warga = Warga::find($id);
+    public function update(Request $request, Warga $warga)
+    {
+        $request->validate([
+            'no_ktp' => 'required|string|max:20|unique:warga,no_ktp,' . $warga->id . ',id',
+            'nama' => 'required|string|max:100',
+            'jenis_kelamin' => 'required|in:L,P',
+            'agama' => 'nullable|string|max:30',
+            'pekerjaan' => 'nullable|string|max:50',
+            'telp' => 'nullable|string|max:20',
+            'email' => 'nullable|email|max:100',
+        ]);
 
-    // 1. Validasi input form
-    $request->validate([
-        'no_ktp' => 'required|string|max:20|unique:warga,no_ktp,' . $warga->warga_id . ',warga_id',
-        'nama' => 'required|string|max:100',
-        'jenis_kelamin' => 'required|in:L,P',
-        // ... (sisanya sudah benar)
-    ]);
+        $warga->update($request->all());
 
-    // 2. Update data warga yang ada
-    $warga->update($request->all());
-
-    // 3. Redirect kembali ke halaman index dengan pesan sukses
-    return redirect()->route('warga.index')
+        return redirect()->route('warga.index')
                         ->with('success', 'Data warga berhasil diperbarui.');
-}
+    }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
-{
-    // TAMBAHKAN BARIS INI:
-    $warga = Warga::find($id);
+    public function destroy(Warga $warga)
+    {
+        $warga->delete();
 
-    // Jika data tidak ditemukan
-    if (!$warga) {
         return redirect()->route('warga.index')
-                        ->with('error', 'Data warga tidak ditemukan.');
-    }
-
-    // Hapus data warga
-    $warga->delete();
-
-    // Redirect kembali ke halaman index dengan pesan sukses
-    return redirect()->route('warga.index')
                         ->with('success', 'Data warga berhasil dihapus.');
-}
+    }
 }

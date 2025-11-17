@@ -33,10 +33,98 @@
                         </div>
                     </div>
 
-                    <!-- Card Layout -->
+                    <!-- Search dan Filter Options -->
+                    <div class="card mb-4 border-primary">
+                        <div class="card-body">
+                            <!-- Search Bar -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label"><i class="fas fa-search me-2"></i>Cari Warga</label>
+                                    <form action="{{ route('warga.index') }}" method="GET" id="searchForm">
+                                        <div class="input-group">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   name="search" 
+                                                   id="searchWarga" 
+                                                   placeholder="Cari berdasarkan nama, NIK, agama, atau pekerjaan..."
+                                                   value="{{ request('search') }}">
+                                            <button class="btn btn-primary" type="submit" id="btnSearch">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                            @if(request('search'))
+                                            <a href="{{ route('warga.index') }}" class="btn btn-outline-secondary">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                            @endif
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <form action="{{ route('warga.index') }}" method="GET" id="filterForm">
+                                @if(request('search'))
+                                    <input type="hidden" name="search" value="{{ request('search') }}">
+                                @endif
+                                <div class="row g-3">
+                                    <div class="col-md-4">
+                                        <label class="form-label"><i class="fas fa-filter me-2"></i>Filter Jenis Kelamin</label>
+                                        <select class="form-select" name="jenis_kelamin" id="filterJenisKelamin" onchange="this.form.submit()">
+                                            <option value="">Semua Jenis Kelamin</option>
+                                            <option value="L" {{ request('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
+                                            <option value="P" {{ request('jenis_kelamin') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label"><i class="fas fa-sort me-2"></i>Urutkan Berdasarkan</label>
+                                        <select class="form-select" name="sort" id="sortBy" onchange="this.form.submit()">
+                                            <option value="nama" {{ request('sort') == 'nama' ? 'selected' : '' }}>Nama A-Z</option>
+                                            <option value="nama_desc" {{ request('sort') == 'nama_desc' ? 'selected' : '' }}>Nama Z-A</option>
+                                            <option value="terbaru" {{ request('sort') == 'terbaru' ? 'selected' : '' }}>Terbaru</option>
+                                            <option value="terlama" {{ request('sort') == 'terlama' ? 'selected' : '' }}>Terlama</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <label class="form-label"><i class="fas fa-list me-2"></i>Data Per Halaman</label>
+                                        <select class="form-select" name="per_page" id="perPage" onchange="this.form.submit()">
+                                            <option value="12" {{ request('per_page', 12) == 12 ? 'selected' : '' }}>12 Data</option>
+                                            <option value="24" {{ request('per_page') == 24 ? 'selected' : '' }}>24 Data</option>
+                                            <option value="36" {{ request('per_page') == 36 ? 'selected' : '' }}>36 Data</option>
+                                            <option value="48" {{ request('per_page') == 48 ? 'selected' : '' }}>48 Data</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Info Pencarian -->
+                    @if(request('search') || request('jenis_kelamin') || request('sort'))
+                    <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+                        <strong><i class="fas fa-info-circle me-2"></i>Filter Aktif:</strong>
+                        @if(request('search'))
+                            <span class="badge bg-primary me-2">Pencarian: "{{ request('search') }}"</span>
+                        @endif
+                        @if(request('jenis_kelamin'))
+                            <span class="badge bg-success me-2">Jenis Kelamin: {{ request('jenis_kelamin') == 'L' ? 'Laki-laki' : 'Perempuan' }}</span>
+                        @endif
+                        @if(request('sort'))
+                            <span class="badge bg-warning me-2">Urutan: 
+                                @if(request('sort') == 'nama') Nama A-Z
+                                @elseif(request('sort') == 'nama_desc') Nama Z-A
+                                @elseif(request('sort') == 'terbaru') Terbaru
+                                @elseif(request('sort') == 'terlama') Terlama
+                                @endif
+                            </span>
+                        @endif
+                        <a href="{{ route('warga.index') }}" class="btn btn-sm btn-outline-info ms-2">Hapus Filter</a>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    @endif
+
+                    <!-- Card Layout - More Cards per Row -->
                     <div class="row g-4">
                         @forelse ($warga as $index => $item)
-                        <div class="col-12 col-md-6 col-lg-4">
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-6">
                             <div class="card h-100 shadow-sm border-primary">
                                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
                                     <h6 class="mb-0">
@@ -92,7 +180,7 @@
                                             <i class="fas fa-phone me-2 text-primary"></i>
                                             <span class="fw-bold">Telepon:</span>
                                         </div>
-                                        <p class="ms-4 mb-0">{{ $item->telp }}</p>
+                                        <p class="ms-4 mb-0">{{ $item->telp ?: '-' }}</p>
                                     </div>
                                     
                                     <div class="mb-3">
@@ -110,26 +198,32 @@
                                     </div>
                                 </div>
                                 <div class="card-footer bg-transparent border-top-0">
-                                    <div class="d-flex justify-content-between">
-                                        <a href="{{ route('warga.edit', $item->warga_id) }}" 
-                                           class="btn btn-warning btn-sm" 
-                                           data-bs-toggle="tooltip" 
-                                           title="Edit Data">
-                                            <i class="fas fa-edit me-1"></i>Edit
-                                        </a>
-                                        <form action="{{ route('warga.destroy', $item->warga_id) }}" method="POST" class="d-inline">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" 
-                                                    class="btn btn-danger btn-sm" 
-                                                    data-bs-toggle="tooltip" 
-                                                    title="Hapus Data"
-                                                    onclick="return confirm('Apakah Anda yakin ingin menghapus data warga ini?')">
-                                                <i class="fas fa-trash me-1"></i>Hapus
-                                            </button>
-                                        </form>
-                                    </div>
-                                </div>
+    <div class="d-flex justify-content-between">
+        <a href="{{ route('warga.edit', $item) }}" 
+           class="btn btn-warning btn-sm" 
+           data-bs-toggle="tooltip" 
+           title="Edit Data">
+            <i class="fas fa-edit me-1"></i>Edit
+        </a>
+        <a href="{{ route('warga.show', $item) }}" 
+           class="btn btn-info btn-sm" 
+           data-bs-toggle="tooltip" 
+           title="Lihat Detail">
+            <i class="fas fa-eye me-1"></i>Detail
+        </a>
+        <form action="{{ route('warga.destroy', $item) }}" method="POST" class="d-inline">
+            @csrf
+            @method('DELETE')
+            <button type="submit" 
+                    class="btn btn-danger btn-sm" 
+                    data-bs-toggle="tooltip" 
+                    title="Hapus Data"
+                    onclick="return confirm('Apakah Anda yakin ingin menghapus data warga ini?')">
+                <i class="fas fa-trash me-1"></i>Hapus
+            </button>
+        </form>
+    </div>
+</div>
                             </div>
                         </div>
                         @empty
@@ -137,8 +231,25 @@
                             <div class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="fas fa-user-slash fa-3x mb-3"></i>
-                                    <h5>Tidak ada data warga</h5>
-                                    <p>Silakan tambah data warga baru dengan mengklik tombol di atas.</p>
+                                    <h5>
+                                        @if(request('search') || request('jenis_kelamin'))
+                                            Data warga tidak ditemukan
+                                        @else
+                                            Tidak ada data warga
+                                        @endif
+                                    </h5>
+                                    <p>
+                                        @if(request('search') || request('jenis_kelamin'))
+                                            Coba ubah kata kunci pencarian atau filter yang digunakan
+                                        @else
+                                            Silakan tambah data warga baru dengan mengklik tombol di atas.
+                                        @endif
+                                    </p>
+                                    @if(request('search') || request('jenis_kelamin'))
+                                    <a href="{{ route('warga.index') }}" class="btn btn-primary mt-2">
+                                        <i class="fas fa-refresh me-2"></i>Tampilkan Semua Data
+                                    </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -151,7 +262,7 @@
                             Menampilkan {{ $warga->firstItem() }} sampai {{ $warga->lastItem() }} dari {{ $warga->total() }} data
                         </div>
                         <nav>
-                            {{ $warga->links('pagination::bootstrap-5') }}
+                            {{ $warga->withQueryString()->links('pagination::bootstrap-5') }}
                         </nav>
                     </div>
                     @endif
@@ -219,6 +330,16 @@
                 }
             });
         });
+
+        // Search form submission on enter
+        const searchInput = document.getElementById('searchWarga');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('searchForm').submit();
+                }
+            });
+        }
 
         console.log('Warga index page loaded with enhanced features');
     });

@@ -5,20 +5,22 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class keluargaKk extends Model
+class KeluargaKk extends Model
 {
     use HasFactory;
 
-    // Tentukan nama tabel secara manual
     protected $table = 'keluarga_kk';
-
-    // Tentukan Primary Key secara manual
     protected $primaryKey = 'kk_id';
 
-    // Kolom yang boleh diisi (Mass Assignment)
+    // ✅ TAMBAHKAN INI untuk Route Model Binding
+    public function getRouteKeyName()
+    {
+        return 'kk_id';
+    }
+
     protected $fillable = [
         'kk_nomor',
-        'kepala_keluarga_warga_id',
+        'kepala_keluarga_warga_id', 
         'alamat',
         'rt',
         'rw',
@@ -26,7 +28,23 @@ class keluargaKk extends Model
 
     public function kepalaKeluarga()
     {
-        // Parameter: (Model Tujuan, Foreign Key, Primary Key di tabel Warga)
         return $this->belongsTo(Warga::class, 'kepala_keluarga_warga_id', 'warga_id');
+    }
+
+    public function anggotaKeluarga()
+    {
+        return $this->hasMany(AnggotaKeluarga::class, 'kk_id', 'kk_id');
+    }
+
+    public function anggotaWarga()
+    {
+        return $this->hasManyThrough(
+            Warga::class,
+            AnggotaKeluarga::class,
+            'kk_id',
+            'warga_id',  
+            'kk_id',
+            'warga_id'
+        );
     }
 }

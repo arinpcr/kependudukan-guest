@@ -1,22 +1,13 @@
 <?php
+// File: routes/web.php
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WargaController;
 use App\Http\Controllers\KeluargaKkController;
+use App\Http\Controllers\AnggotaKeluargaController;
 use App\Http\Controllers\UserController;
-
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
-*/
 
 // Public Routes - Tidak memerlukan authentication
 Route::get('/', function () {
@@ -25,52 +16,60 @@ Route::get('/', function () {
 
 // Authentication Routes untuk guest (belum login)
 Route::middleware('guest')->group(function () {
-    // Login Routes - versi baru
+    // Login Routes
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
     Route::post('/login', [AuthController::class, 'login'])->name('login.submit');
-    Route::post('/login', [AuthController::class, 'login'])->name('login');
-
-    // Login Routes - versi lama (untuk kompatibilitas)
-    Route::get('/auth', [AuthController::class, 'index']);           // Form login alternatif
-    Route::post('/auth/login', [AuthController::class, 'login']);    // Proses login alternatif
 
     // Register Routes
     Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register'])->name('register.submit');
 
-    // Email check (AJAX) - Optional
+    // Email check
     Route::post('/check-email', [AuthController::class, 'checkEmail'])->name('check.email');
 });
 
-// Guest Success Route - bisa diakses setelah login guest
+// Guest Success Route
 Route::get('/auth/success', [AuthController::class, 'success'])->name('auth.success');
 
 // Protected Routes - Memerlukan authentication
 Route::middleware('auth')->group(function () {
     // Dashboard Routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-    // Route::get('/dashboard-guest', action: [DashboardController::class, 'index'])->name('guest.dashboard');
 
-    // CRUD Routes
+    // CRUD Routes dengan parameter yang benar
     Route::resource('warga', WargaController::class);
-    Route::resource('keluarga', KeluargaKkController::class);
+    
+    // ✅ PERBAIKI ROUTE KELUARGA DENGAN PARAMETER YANG BENAR
+    Route::resource('keluarga', KeluargaKkController::class, [
+        'parameters' => ['keluarga' => 'keluarga']
+    ]);
+    
+    // ✅ ROUTES ANGGOTA KELUARGA - Nested Routes dengan parameter konsisten
+    Route::prefix('keluarga/{keluarga}')->group(function () {
+        Route::get('/anggota', [AnggotaKeluargaController::class, 'index'])->name('anggota-keluarga.index');
+        Route::get('/anggota/create', [AnggotaKeluargaController::class, 'create'])->name('anggota-keluarga.create');
+        Route::post('/anggota', [AnggotaKeluargaController::class, 'store'])->name('anggota-keluarga.store');
+        Route::get('/anggota/{anggota}', [AnggotaKeluargaController::class, 'show'])->name('anggota-keluarga.show');
+        Route::get('/anggota/{anggota}/edit', [AnggotaKeluargaController::class, 'edit'])->name('anggota-keluarga.edit');
+        Route::put('/anggota/{anggota}', [AnggotaKeluargaController::class, 'update'])->name('anggota-keluarga.update');
+        Route::delete('/anggota/{anggota}', [AnggotaKeluargaController::class, 'destroy'])->name('anggota-keluarga.destroy');
+    });
+
+    // ✅ ROUTE BARU UNTUK SEMUA ANGGOTA
+    Route::get('/anggota-keluarga', [AnggotaKeluargaController::class, 'allAnggota'])->name('anggota-keluarga.all');
+
     Route::resource('user', UserController::class);
 
     // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });
 
-// Fallback Route
-Route::fallback(function () {
-    return redirect('/');
-});
-
-// Public Routes - Tidak memerlukan authentication
-Route::get('/', function () {
-    return view('guest.dashboard');
-});
-
+// Public Routes - Tambahan
 Route::get('/about', function () {
     return view('pages.about');
 })->name('about');
 
+// Fallback Route
+Route::fallback(function () {
+    return redirect('/');
+});
