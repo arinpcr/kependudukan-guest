@@ -25,7 +25,6 @@ class warga extends Model
 
     public $timestamps = true;
 
-    // ✅ TAMBAHKAN RELASI KE ANGGOTA KELUARGA
     public function anggotaKeluarga()
     {
         return $this->hasOne(AnggotaKeluarga::class, 'warga_id', 'warga_id');
