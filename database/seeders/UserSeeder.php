@@ -46,8 +46,8 @@ class UserSeeder extends Seeder
             DB::table('users')->insert($user);
         }
 
-        // Generate 20 data user random mengikuti pattern yang diminta
-        foreach (range(1, 20) as $index) {
+        // Generate 100 data user random mengikuti pattern yang diminta
+        foreach (range(1, 100) as $index) {
             DB::table('users')->insert([
                 'name' => $faker->name,
                 'email' => $faker->unique()->safeEmail,
@@ -59,7 +59,7 @@ class UserSeeder extends Seeder
         }
 
         $this->command->info('User Seeder berhasil dijalankan!');
-        $this->command->info('Total user created: 23');
+        $this->command->info('Total user created: 103');
         $this->command->info('Login testing:');
         $this->command->info('Email: admin@kependudukan.com / Password: password123');
         $this->command->info('Email: petugas@kependudukan.com / Password: password123');

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Warga;
+use App\Models\WargaDocument;
+use Illuminate\Support\Facades\Storage;
 
 class WargaController extends Controller
 {
@@ -83,9 +85,29 @@ class WargaController extends Controller
             'pekerjaan' => 'nullable|string|max:50',
             'telp' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:100',
+            'documents.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120', // 5MB
         ]);
 
-        Warga::create($request->all());
+        $warga = Warga::create($request->all());
+
+        // Handle document upload
+        if ($request->hasFile('documents')) {
+            foreach ($request->file('documents') as $document) {
+                $documentName = time() . '_' . uniqid() . '.' . $document->getClientOriginalExtension();
+                $documentPath = $document->storeAs('public/documents', $documentName);
+
+                WargaDocument::create([
+                    'warga_id' => $warga->warga_id,
+                    'file_name' => $documentName,
+                    'file_path' => $documentPath,
+                    'file_type' => $document->getClientMimeType(),
+                    'original_name' => $document->getClientOriginalName(),
+                    'file_size' => $document->getSize(),
+                    'document_type' => 'kk', // Default KK
+                    'description' => 'Dokumen KK ' . $warga->nama,
+                ]);
+            }
+        }
 
         return redirect()->route('warga.index')
                          ->with('success', 'Data warga berhasil ditambahkan.');
@@ -96,6 +118,7 @@ class WargaController extends Controller
      */
     public function show(Warga $warga)
     {
+        $warga->load('documents');
         return view('pages.warga.show', compact('warga'));
     }
 
@@ -104,6 +127,7 @@ class WargaController extends Controller
      */
     public function edit(Warga $warga)
     {
+        $warga->load('documents');
         return view('pages.warga.edit', compact('warga'));
     }
 
@@ -113,16 +137,36 @@ class WargaController extends Controller
     public function update(Request $request, Warga $warga)
     {
         $request->validate([
-            'no_ktp' => 'required|string|max:20|unique:warga,no_ktp,' . $warga->id . ',id',
+            'no_ktp' => 'required|string|max:20|unique:warga,no_ktp,' . $warga->warga_id . ',warga_id',
             'nama' => 'required|string|max:100',
             'jenis_kelamin' => 'required|in:L,P',
             'agama' => 'nullable|string|max:30',
             'pekerjaan' => 'nullable|string|max:50',
             'telp' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:100',
+            'documents.*' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         $warga->update($request->all());
+
+        // Handle document upload
+        if ($request->hasFile('documents')) {
+            foreach ($request->file('documents') as $document) {
+                $documentName = time() . '_' . uniqid() . '.' . $document->getClientOriginalExtension();
+                $documentPath = $document->storeAs('public/documents', $documentName);
+
+                WargaDocument::create([
+                    'warga_id' => $warga->warga_id,
+                    'file_name' => $documentName,
+                    'file_path' => $documentPath,
+                    'file_type' => $document->getClientMimeType(),
+                    'original_name' => $document->getClientOriginalName(),
+                    'file_size' => $document->getSize(),
+                    'document_type' => 'kk',
+                    'description' => 'Dokumen KK ' . $warga->nama,
+                ]);
+            }
+        }
 
         return redirect()->route('warga.index')
                         ->with('success', 'Data warga berhasil diperbarui.');
@@ -133,9 +177,33 @@ class WargaController extends Controller
      */
     public function destroy(Warga $warga)
     {
+        // Hapus dokumen terkait
+        foreach ($warga->documents as $document) {
+            if (Storage::exists('public/documents/' . $document->file_name)) {
+                Storage::delete('public/documents/' . $document->file_name);
+            }
+            $document->delete();
+        }
+
         $warga->delete();
 
         return redirect()->route('warga.index')
                         ->with('success', 'Data warga berhasil dihapus.');
+    }
+
+    /**
+     * Hapus dokumen warga
+     */
+    public function deleteDocument($documentId)
+    {
+        $document = WargaDocument::findOrFail($documentId);
+        
+        if (Storage::exists('public/documents/' . $document->file_name)) {
+            Storage::delete('public/documents/' . $document->file_name);
+        }
+        
+        $document->delete();
+
+        return back()->with('success', 'Dokumen berhasil dihapus.');
     }
 }

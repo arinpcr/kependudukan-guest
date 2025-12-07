@@ -73,3 +73,6 @@ Route::get('/about', function () {
 Route::fallback(function () {
     return redirect('/');
 });
+
+// Tambahkan route untuk hapus dokumen
+Route::delete('/warga/document/{document}', [WargaController::class, 'deleteDocument'])->name('warga.document.delete');

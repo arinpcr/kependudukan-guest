@@ -48,8 +48,8 @@ class WargaSeeder extends Seeder
             Warga::create($warga);
         }
 
-        // Generate 50 data warga random
-        foreach (range(1, 50) as $index) {
+        // Generate 100 data warga random
+        foreach (range(1, 100) as $index) {
             $gender = $faker->randomElement(['L', 'P']);
             $firstName = $gender == 'L' ? $faker->firstNameMale : $faker->firstNameFemale;
             
@@ -67,5 +67,8 @@ class WargaSeeder extends Seeder
                 'email' => $faker->unique()->safeEmail,
             ]);
         }
+
+        $this->command->info('Warga Seeder berhasil dijalankan!');
+        $this->command->info('Total warga created: 103');
     }
 }

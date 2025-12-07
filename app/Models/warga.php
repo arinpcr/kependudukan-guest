@@ -1,12 +1,10 @@
 <?php
-// File: app/Models/warga.php - UPDATE
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class warga extends Model
+class Warga extends Model
 {
     use HasFactory;
 
@@ -34,5 +32,17 @@ class warga extends Model
     public function kepalaKeluargaDi()
     {
         return $this->hasOne(KeluargaKk::class, 'kepala_keluarga_warga_id', 'warga_id');
+    }
+
+    // ✅ TAMBAHKAN RELASI DOKUMEN
+    public function documents()
+    {
+        return $this->hasMany(WargaDocument::class, 'warga_id', 'warga_id');
+    }
+
+    // ✅ ACCESSOR UNTUK DOKUMEN KK
+    public function getKkDocumentAttribute()
+    {
+        return $this->documents->where('document_type', 'kk')->first();
     }
 }

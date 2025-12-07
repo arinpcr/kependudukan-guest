@@ -29,9 +29,90 @@
 
                         <div class="text-muted">
                             <i class="fas fa-info-circle me-2 text-primary"></i>
-                            Total Data: <strong>{{ $dataUser->count() }}</strong>
+                            Total Data: <strong>{{ $dataUser->total() }}</strong>
                         </div>
                     </div>
+
+                    <!-- Search dan Filter Options -->
+                    <div class="card mb-4 border-primary">
+                        <div class="card-body">
+                            <!-- Search Bar -->
+                            <div class="row mb-3">
+                                <div class="col-12">
+                                    <label class="form-label"><i class="fas fa-search me-2"></i>Cari User</label>
+                                    <form action="{{ route('user.index') }}" method="GET" id="searchForm">
+                                        <div class="input-group">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   name="search" 
+                                                   id="searchUser" 
+                                                   placeholder="Cari berdasarkan nama atau email..."
+                                                   value="{{ request('search') }}">
+                                            <button class="btn btn-primary" type="submit" id="btnSearch">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                            @if(request('search'))
+                                            <a href="{{ route('user.index') }}" class="btn btn-outline-secondary">
+                                                <i class="fas fa-times"></i>
+                                            </a>
+                                            @endif
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+
+                            <form action="{{ route('user.index') }}" method="GET" id="filterForm">
+                                @if(request('search'))
+                                    <input type="hidden" name="search" value="{{ request('search') }}">
+                                @endif
+                                <div class="row g-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label"><i class="fas fa-sort me-2"></i>Urutkan Berdasarkan</label>
+                                        <select class="form-select" name="sort" id="sortBy" onchange="this.form.submit()">
+                                            <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nama A-Z</option>
+                                            <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Nama Z-A</option>
+                                            <option value="email" {{ request('sort') == 'email' ? 'selected' : '' }}>Email A-Z</option>
+                                            <option value="email_desc" {{ request('sort') == 'email_desc' ? 'selected' : '' }}>Email Z-A</option>
+                                            <option value="terbaru" {{ request('sort') == 'terbaru' ? 'selected' : '' }}>Terbaru</option>
+                                            <option value="terlama" {{ request('sort') == 'terlama' ? 'selected' : '' }}>Terlama</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label"><i class="fas fa-list me-2"></i>Data Per Halaman</label>
+                                        <select class="form-select" name="per_page" id="perPage" onchange="this.form.submit()">
+                                            <option value="12" {{ request('per_page', 12) == 12 ? 'selected' : '' }}>12 Data</option>
+                                            <option value="24" {{ request('per_page') == 24 ? 'selected' : '' }}>24 Data</option>
+                                            <option value="36" {{ request('per_page') == 36 ? 'selected' : '' }}>36 Data</option>
+                                            <option value="48" {{ request('per_page') == 48 ? 'selected' : '' }}>48 Data</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Info Pencarian -->
+                    @if(request('search') || request('sort'))
+                    <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+                        <strong><i class="fas fa-info-circle me-2"></i>Filter Aktif:</strong>
+                        @if(request('search'))
+                            <span class="badge bg-primary me-2">Pencarian: "{{ request('search') }}"</span>
+                        @endif
+                        @if(request('sort'))
+                            <span class="badge bg-warning me-2">Urutan: 
+                                @if(request('sort') == 'name') Nama A-Z
+                                @elseif(request('sort') == 'name_desc') Nama Z-A
+                                @elseif(request('sort') == 'email') Email A-Z
+                                @elseif(request('sort') == 'email_desc') Email Z-A
+                                @elseif(request('sort') == 'terbaru') Terbaru
+                                @elseif(request('sort') == 'terlama') Terlama
+                                @endif
+                            </span>
+                        @endif
+                        <a href="{{ route('user.index') }}" class="btn btn-sm btn-outline-info ms-2">Hapus Filter</a>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    @endif
 
                     <!-- Card Layout -->
                     <div class="row g-4">
@@ -42,7 +123,7 @@
                                     <h6 class="mb-0">
                                         <i class="fas fa-user me-2"></i>{{ $item->name }}
                                     </h6>
-                                    <span class="badge bg-light text-dark">#{{ $index + 1 }}</span>
+                                    <span class="badge bg-light text-dark">#{{ $dataUser->firstItem() + $index }}</span>
                                 </div>
                                 <div class="card-body">
                                     <div class="mb-3">
@@ -66,7 +147,7 @@
                                             <i class="fas fa-calendar me-2 text-primary"></i>
                                             <span class="fw-bold">Tanggal Dibuat:</span>
                                         </div>
-                                        <p class="ms-4 mb-0">{{ $item->created_at->format('d/m/Y') }}</p>
+                                        <p class="ms-4 mb-0">{{ $item->created_at->format('d/m/Y H:i') }}</p>
                                     </div>
                                 </div>
                                 <div class="card-footer bg-transparent border-top-0">
@@ -97,13 +178,41 @@
                             <div class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="fas fa-inbox fa-3x mb-3"></i>
-                                    <h5>Tidak ada data User</h5>
-                                    <p>Silakan tambah user baru dengan mengklik tombol di atas.</p>
+                                    <h5>
+                                        @if(request('search'))
+                                            Data user tidak ditemukan
+                                        @else
+                                            Tidak ada data User
+                                        @endif
+                                    </h5>
+                                    <p>
+                                        @if(request('search'))
+                                            Coba ubah kata kunci pencarian yang digunakan
+                                        @else
+                                            Silakan tambah user baru dengan mengklik tombol di atas.
+                                        @endif
+                                    </p>
+                                    @if(request('search'))
+                                    <a href="{{ route('user.index') }}" class="btn btn-primary mt-2">
+                                        <i class="fas fa-refresh me-2"></i>Tampilkan Semua Data
+                                    </a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
                         @endforelse
                     </div>
+
+                    @if($dataUser->hasPages())
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <div class="text-muted">
+                            Menampilkan {{ $dataUser->firstItem() }} sampai {{ $dataUser->lastItem() }} dari {{ $dataUser->total() }} data
+                        </div>
+                        <nav>
+                            {{ $dataUser->withQueryString()->links('pagination::bootstrap-5') }}
+                        </nav>
+                    </div>
+                    @endif
                 </div>
             </div>
         </div>
@@ -165,6 +274,16 @@
                 }
             });
         });
+
+        // Search form submission on enter
+        const searchInput = document.getElementById('searchUser');
+        if (searchInput) {
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    document.getElementById('searchForm').submit();
+                }
+            });
+        }
 
         console.log('User index page loaded with enhanced features');
     });

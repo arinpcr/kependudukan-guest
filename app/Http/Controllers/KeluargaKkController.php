@@ -11,13 +11,66 @@ class KeluargaKkController extends Controller
     /**
      * Menampilkan daftar semua data keluarga_kk.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $keluarga = KeluargaKk::with('kepalaKeluarga')
-                            ->orderBy('kk_nomor', 'asc')
-                            ->paginate(10);
+        // Query dasar dengan eager loading
+        $query = KeluargaKk::with('kepalaKeluarga');
 
-        return view('pages.keluarga.index', compact('keluarga'));
+        // Pencarian
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('kk_nomor', 'like', '%' . $search . '%')
+                  ->orWhere('alamat', 'like', '%' . $search . '%')
+                  ->orWhere('rt', 'like', '%' . $search . '%')
+                  ->orWhere('rw', 'like', '%' . $search . '%')
+                  ->orWhereHas('kepalaKeluarga', function($q2) use ($search) {
+                      $q2->where('nama', 'like', '%' . $search . '%');
+                  });
+            });
+        }
+
+        // Filter RT
+        if ($request->has('rt') && $request->rt != '') {
+            $query->where('rt', $request->rt);
+        }
+
+        // Filter RW
+        if ($request->has('rw') && $request->rw != '') {
+            $query->where('rw', $request->rw);
+        }
+
+        // Sorting
+        if ($request->has('sort')) {
+            switch ($request->sort) {
+                case 'kk_nomor_desc':
+                    $query->orderBy('kk_nomor', 'desc');
+                    break;
+                case 'alamat':
+                    $query->orderBy('alamat', 'asc');
+                    break;
+                case 'alamat_desc':
+                    $query->orderBy('alamat', 'desc');
+                    break;
+                case 'terbaru':
+                    $query->orderBy('created_at', 'desc');
+                    break;
+                case 'terlama':
+                    $query->orderBy('created_at', 'asc');
+                    break;
+                default:
+                    $query->orderBy('kk_nomor', 'asc');
+                    break;
+            }
+        } else {
+            $query->orderBy('kk_nomor', 'asc');
+        }
+
+        // Pagination
+        $perPage = $request->has('per_page') ? $request->per_page : 12;
+        $keluarga = $query->paginate($perPage);
+
+        return view('pages.keluarga.index', compact('keluarga'))->with('request', $request);
     }
 
     /**

@@ -38,11 +38,42 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('user.update', $dataUser->id) }}" method="POST">
+                    <form action="{{ route('user.update', $dataUser->id) }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         
                         <div class="row g-4">
+                            <!-- Avatar Section -->
+                            <div class="col-12 text-center mb-4">
+                                <div class="avatar-upload-container">
+                                    <div class="avatar-preview mb-3">
+                                        <img src="{{ $dataUser->avatar_url }}" 
+                                             alt="Avatar {{ $dataUser->name }}" 
+                                             class="rounded-circle shadow-sm"
+                                             id="avatarPreview"
+                                             style="width: 150px; height: 150px; object-fit: cover; border: 3px solid #0d6efd;">
+                                    </div>
+                                    <div class="avatar-upload-controls">
+                                        <input type="file" 
+                                               name="avatar" 
+                                               id="avatarInput" 
+                                               class="d-none" 
+                                               accept="image/jpg,image/jpeg,image/png">
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('avatarInput').click()">
+                                            <i class="fas fa-camera me-2"></i>Ubah Foto Profil
+                                        </button>
+                                        @if($dataUser->avatar)
+                                        <button type="button" class="btn btn-outline-danger btn-sm" onclick="removeAvatar()">
+                                            <i class="fas fa-trash me-2"></i>Hapus Foto
+                                        </button>
+                                        @endif
+                                        <small class="form-text text-muted d-block mt-2">
+                                            Format: JPG, JPEG, PNG. Maksimal: 2MB
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="col-12">
                                 <div class="form-floating">
                                     <input type="text" class="form-control @error('name') is-invalid @enderror" 
@@ -118,9 +149,40 @@
 </div>
 @endsection
 
+@push('styles')
+<style>
+    .avatar-upload-container {
+        position: relative;
+    }
+    .avatar-preview {
+        transition: all 0.3s ease;
+    }
+    .avatar-preview:hover {
+        transform: scale(1.05);
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Avatar preview
+        const avatarInput = document.getElementById('avatarInput');
+        const avatarPreview = document.getElementById('avatarPreview');
+
+        if (avatarInput && avatarPreview) {
+            avatarInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        avatarPreview.src = e.target.result;
+                    }
+                    reader.readAsDataURL(file);
+                }
+            });
+        }
+
         // Password confirmation validation
         const passwordInput = document.getElementById('password');
         const confirmPasswordInput = document.getElementById('password_confirmation');
@@ -128,9 +190,7 @@
         function validatePassword() {
             if (passwordInput.value !== confirmPasswordInput.value) {
                 confirmPasswordInput.setCustomValidity('Password tidak cocok');
-                const toast = new bootstrap.Toast(document.getElementById('errorToast'));
-                document.getElementById('toastMessage').textContent = 'Password dan konfirmasi password tidak cocok';
-                toast.show();
+                showToast('Password dan konfirmasi password tidak cocok');
             } else {
                 confirmPasswordInput.setCustomValidity('');
             }
@@ -153,6 +213,36 @@
             });
         }
     });
+
+    function removeAvatar() {
+        if (confirm('Apakah Anda yakin ingin menghapus foto profil?')) {
+            const avatarPreview = document.getElementById('avatarPreview');
+            const avatarInput = document.getElementById('avatarInput');
+            
+            // Reset to default avatar
+            avatarPreview.src = "{{ asset('img/default-avatar.jpg') }}";
+            avatarInput.value = '';
+            
+            // Add hidden input to indicate avatar removal
+            let removeInput = document.getElementById('removeAvatar');
+            if (!removeInput) {
+                removeInput = document.createElement('input');
+                removeInput.type = 'hidden';
+                removeInput.name = 'remove_avatar';
+                removeInput.value = '1';
+                removeInput.id = 'removeAvatar';
+                document.querySelector('form').appendChild(removeInput);
+            }
+            
+            showToast('Foto profil akan dihapus setelah update');
+        }
+    }
+
+    function showToast(message) {
+        const toast = new bootstrap.Toast(document.getElementById('errorToast'));
+        document.getElementById('toastMessage').textContent = message;
+        toast.show();
+    }
 </script>
 
 <!-- Toast for error messages -->

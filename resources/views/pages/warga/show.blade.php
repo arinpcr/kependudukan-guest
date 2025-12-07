@@ -11,7 +11,7 @@
         </div>
 
         <div class="row justify-content-center wow fadeIn" data-wow-delay="0.3s">
-            <div class="col-lg-8">
+            <div class="col-lg-10">
                 <div class="bg-light border border-primary rounded p-5">
                     
                     @if (session('success'))
@@ -23,13 +23,13 @@
                     @endif
 
                     <!-- Card Detail Warga -->
-                    <div class="card shadow-sm border-primary">
+                    <div class="card shadow-sm border-primary mb-4">
                         <div class="card-header bg-primary text-white">
                             <div class="d-flex justify-content-between align-items-center">
                                 <h4 class="mb-0">
                                     <i class="fas fa-user-circle me-2"></i>Informasi Pribadi
                                 </h4>
-                                <span class="badge bg-light text-dark fs-6">ID: {{ $warga->id }}</span>
+                                <span class="badge bg-light text-dark fs-6">ID: {{ $warga->warga_id }}</span>
                             </div>
                         </div>
                         
@@ -115,63 +115,113 @@
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
 
-                            <!-- Informasi Tambahan -->
-                            <div class="row mt-4">
-                                <div class="col-12">
-                                    <div class="border-top pt-4">
-                                        <h5 class="text-primary mb-3">
-                                            <i class="fas fa-info-circle me-2"></i>Informasi Tambahan
-                                        </h5>
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <i class="fas fa-sync-alt me-2 text-primary"></i>
-                                                    <span class="fw-bold">Terakhir Diupdate:</span>
-                                                </div>
-                                                <p class="ms-4">{{ $warga->updated_at->format('d F Y H:i') }}</p>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <div class="d-flex align-items-center mb-2">
-                                                    <i class="fas fa-database me-2 text-primary"></i>
-                                                    <span class="fw-bold">Status Data:</span>
-                                                </div>
-                                                <p class="ms-4">
-                                                    <span class="badge bg-success fs-6">
-                                                        <i class="fas fa-check me-1"></i>Aktif
+                    <!-- Card Dokumen KK -->
+                    <div class="card shadow-sm border-success">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="mb-0">
+                                <i class="fas fa-file-contract me-2"></i>Dokumen Kartu Keluarga (KK)
+                            </h4>
+                        </div>
+                        <div class="card-body">
+                            @if($warga->documents->count() > 0)
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th><i class="fas fa-file me-2"></i>Nama File</th>
+                                                <th><i class="fas fa-tag me-2"></i>Tipe</th>
+                                                <th><i class="fas fa-weight-hanging me-2"></i>Ukuran</th>
+                                                <th><i class="fas fa-calendar me-2"></i>Upload</th>
+                                                <th><i class="fas fa-cogs me-2"></i>Aksi</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($warga->documents as $document)
+                                            <tr>
+                                                <td>
+                                                    <i class="{{ $document->file_icon }} me-2"></i>
+                                                    {{ $document->original_name }}
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info text-uppercase">
+                                                        {{ pathinfo($document->file_name, PATHINFO_EXTENSION) }}
                                                     </span>
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
+                                                </td>
+                                                <td>{{ number_format($document->file_size / 1024, 2) }} KB</td>
+                                                <td>{{ $document->created_at->format('d/m/Y H:i') }}</td>
+                                                <td>
+                                                    <div class="btn-group btn-group-sm">
+                                                        <a href="{{ $document->file_url }}" 
+                                                           target="_blank" 
+                                                           class="btn btn-outline-primary"
+                                                           data-bs-toggle="tooltip"
+                                                           title="Lihat Dokumen">
+                                                            <i class="fas fa-eye"></i>
+                                                        </a>
+                                                        <a href="{{ $document->file_url }}" 
+                                                           download="{{ $document->original_name }}"
+                                                           class="btn btn-outline-success"
+                                                           data-bs-toggle="tooltip"
+                                                           title="Download">
+                                                            <i class="fas fa-download"></i>
+                                                        </a>
+                                                        <form action="{{ route('warga.document.delete', $document->document_id) }}" 
+                                                              method="POST" 
+                                                              class="d-inline"
+                                                              onsubmit="return confirm('Apakah Anda yakin ingin menghapus dokumen ini?')">
+                                                            @csrf
+                                                            @method('DELETE')
+                                                            <button type="submit" 
+                                                                    class="btn btn-outline-danger"
+                                                                    data-bs-toggle="tooltip"
+                                                                    title="Hapus">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </form>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
                                 </div>
+                            @else
+                                <div class="text-center py-4">
+                                    <i class="fas fa-file-excel fa-3x text-muted mb-3"></i>
+                                    <h5 class="text-muted">Belum ada dokumen KK</h5>
+                                    <p class="text-muted">Silakan upload dokumen KK melalui form edit data warga.</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-transparent mt-4">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a href="{{ route('warga.index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar
+                            </a>
+                            
+                            <div class="btn-group">
+                                <a href="{{ route('warga.edit', $warga) }}" 
+                                   class="btn btn-warning">
+                                    <i class="fas fa-edit me-2"></i>Edit Data
+                                </a>
+                                
+                                <form action="{{ route('warga.destroy', $warga) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            class="btn btn-danger"
+                                            onclick="return confirm('Apakah Anda yakin ingin menghapus data warga {{ $warga->nama }}?')">
+                                        <i class="fas fa-trash me-2"></i>Hapus
+                                    </button>
+                                </form>
                             </div>
                         </div>
-
-                        <div class="card-footer bg-transparent">
-    <div class="d-flex justify-content-between align-items-center">
-        <a href="{{ route('warga.index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar
-        </a>
-        
-        <div class="btn-group">
-            <a href="{{ route('warga.edit', $warga) }}" 
-               class="btn btn-warning">
-                <i class="fas fa-edit me-2"></i>Edit Data
-            </a>
-            
-            <form action="{{ route('warga.destroy', $warga) }}" method="POST" class="d-inline">
-                @csrf
-                @method('DELETE')
-                <button type="submit" 
-                        class="btn btn-danger"
-                        onclick="return confirm('Apakah Anda yakin ingin menghapus data warga {{ $warga->nama }}?')">
-                    <i class="fas fa-trash me-2"></i>Hapus
-                </button>
-            </form>
-        </div>
-    </div>
-</div>                    </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -200,6 +250,10 @@
     .fs-5 {
         font-size: 1.2rem !important;
     }
+    .table th {
+        border-top: none;
+        font-weight: 600;
+    }
 </style>
 @endpush
 
@@ -213,6 +267,12 @@
                 const bsAlert = new bootstrap.Alert(alert);
                 bsAlert.close();
             }, 5000);
+        });
+
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
         });
 
         // Enhanced delete confirmation

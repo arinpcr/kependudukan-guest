@@ -48,7 +48,7 @@ class AnggotaKeluargaSeeder extends Seeder
             }
 
             // 3. Tambahkan anggota lain (anak, orang tua, dll)
-            $jumlahAnggotaLain = $faker->numberBetween(1, 3);
+            $jumlahAnggotaLain = $faker->numberBetween(1, 5); // Maksimal 5 anggota lain
             $wargaBelumAnggota = Warga::whereNotIn('warga_id', $wargaSudahMenjadiAnggota)
                                     ->inRandomOrder()
                                     ->take($jumlahAnggotaLain)

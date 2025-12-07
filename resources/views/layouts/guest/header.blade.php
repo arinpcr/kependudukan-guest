@@ -126,7 +126,18 @@
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
                                 <div class="user-avatar me-2">
-                                    <i class="fas fa-user-circle fa-lg text-primary"></i>
+                                    @if(Auth::user()->avatar)
+                                        <img src="{{ Auth::user()->avatar_url }}" 
+                                             alt="{{ Auth::user()->name }}" 
+                                             class="rounded-circle"
+                                             style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #0d6efd;">
+                                    @else
+                                        <!-- Fallback avatar -->
+                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
+                                             style="width: 40px; height: 40px;">
+                                            <i class="fas fa-user text-white"></i>
+                                        </div>
+                                    @endif
                                 </div>
                                 <div class="user-info">
                                     <div class="user-name small fw-bold">{{ Auth::user()->name }}</div>
@@ -175,7 +186,7 @@
     </div>
 </div>
 
-<!-- Search Modal (tetap sama) -->
+<!-- Search Modal -->
 <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content rounded-0">
@@ -198,4 +209,60 @@
         </div>
     </div>
 </div>
+
+<!-- Temporary Debug - Hapus setelah testing -->
+@auth
+<div class="position-fixed bottom-0 start-0 p-3 bg-warning text-dark small" style="z-index: 9999; display: none;" id="debugPanel">
+    <strong>Debug Avatar:</strong><br>
+    User: {{ Auth::user()->name }}<br>
+    Avatar: {{ Auth::user()->avatar ?? 'NULL' }}<br>
+    Avatar URL: {{ Auth::user()->avatar_url }}<br>
+    <button class="btn btn-sm btn-danger mt-1" onclick="document.getElementById('debugPanel').style.display='none'">Tutup</button>
+</div>
+@endauth
 <!-- Navbar End -->
+
+@push('styles')
+<style>
+    .user-avatar img {
+        transition: transform 0.3s ease;
+    }
+    .user-avatar:hover img {
+        transform: scale(1.1);
+    }
+    .nav-link.dropdown-toggle:hover .user-avatar img {
+        transform: scale(1.05);
+    }
+    .dropdown-menu {
+        min-width: 200px;
+    }
+    .user-info {
+        line-height: 1.2;
+    }
+</style>
+@endpush
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Toggle debug panel dengan shortcut Ctrl+D
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'd') {
+                e.preventDefault();
+                const debugPanel = document.getElementById('debugPanel');
+                if (debugPanel) {
+                    debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
+                }
+            }
+        });
+
+        // Initialize tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+
+        console.log('Header loaded with avatar support');
+    });
+</script>
+@endpush
