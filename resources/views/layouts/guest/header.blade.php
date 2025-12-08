@@ -1,4 +1,3 @@
-<!-- Navbar Start -->
 <div class="container-fluid border-bottom bg-light wow fadeIn" data-wow-delay="0.1s">
     <div class="container topbar bg-primary d-none d-lg-block py-2" style="border-radius: 0 40px">
         <div class="d-flex justify-content-between">
@@ -24,55 +23,53 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav mx-auto">
-                    <!-- Menu Home & About -->
                     <a href="{{ url('/') }}" class="nav-item nav-link {{ request()->is('/') ? 'active' : '' }}">
                         <i class="fas fa-home me-1"></i>Home
                     </a>
+                    
                     <a href="{{ route('about') }}" class="nav-item nav-link {{ request()->routeIs('about') ? 'active' : '' }}">
                         <i class="fas fa-info-circle me-1"></i>About
                     </a>
 
-                    <!-- Menu Data -->
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fas fa-database me-1"></i>Data
                         </a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
                             @auth
-                                <!-- Menu untuk user login -->
                                 <a href="{{ route('warga.index') }}" class="dropdown-item {{ request()->routeIs('warga.index') ? 'active' : '' }}">
                                     <i class="fas fa-users me-2"></i>Data Warga
                                 </a>
                                 <a href="{{ route('keluarga.index') }}" class="dropdown-item {{ request()->routeIs('keluarga.index') ? 'active' : '' }}">
                                     <i class="fas fa-home me-2"></i>Data Keluarga
                                 </a>
-                                
-                                <!-- ✅ ANGGOTA KELUARGA - LINK LANGSUNG KE HALAMAN ANGGOTA -->
                                 <a href="{{ route('anggota-keluarga.all') }}" class="dropdown-item {{ request()->routeIs('anggota-keluarga.all') ? 'active' : '' }}">
                                     <i class="fas fa-user-friends me-2"></i>Data Anggota Keluarga
                                 </a>
-                                
+                                <a href="{{ route('kematian.index') }}" class="dropdown-item {{ request()->routeIs('kematian.*') ? 'active' : '' }}">
+                                    <i class="fas fa-book-dead me-2"></i>Data Kematian
+                                </a>
                                 <div class="dropdown-divider"></div>
                                 <a href="{{ route('user.index') }}" class="dropdown-item {{ request()->routeIs('user.index') ? 'active' : '' }}">
                                     <i class="fas fa-user-cog me-2"></i>Data User
                                 </a>
                             @else
-                                <!-- Menu untuk guest -->
-                                <a href="{{ route('warga.index') }}" class="dropdown-item {{ request()->routeIs('warga.index') ? 'active' : '' }}">
+                                <a href="{{ route('warga.index') }}" class="dropdown-item">
                                     <i class="fas fa-users me-2"></i>Data Warga
                                 </a>
-                                <a href="{{ route('keluarga.index') }}" class="dropdown-item {{ request()->routeIs('keluarga.index') ? 'active' : '' }}">
+                                <a href="{{ route('keluarga.index') }}" class="dropdown-item">
                                     <i class="fas fa-home me-2"></i>Data Keluarga
                                 </a>
-                                
-                                <a href="{{ route('anggota-keluarga.all') }}" class="dropdown-item {{ request()->routeIs('anggota-keluarga.all') ? 'active' : '' }}">
+                                <a href="{{ route('anggota-keluarga.all') }}" class="dropdown-item">
                                     <i class="fas fa-user-friends me-2"></i>Data Anggota Keluarga
+                                </a>
+                                <a href="{{ route('kematian.index') }}" class="dropdown-item">
+                                    <i class="fas fa-book-dead me-2"></i>Data Kematian
                                 </a>
                             @endauth
                         </div>
                     </div>
 
-                    <!-- Menu Tambah Data - Hanya untuk user login -->
                     @auth
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
@@ -85,6 +82,9 @@
                             <a href="{{ route('keluarga.create') }}" class="dropdown-item {{ request()->routeIs('keluarga.create') ? 'active' : '' }}">
                                 <i class="fas fa-house-user me-2"></i>Tambah Keluarga
                             </a>
+                            <a href="{{ route('kematian.create') }}" class="dropdown-item {{ request()->routeIs('kematian.create') ? 'active' : '' }}">
+                                <i class="fas fa-file-medical me-2"></i>Tambah Kematian
+                            </a>
                             <a href="{{ route('user.create') }}" class="dropdown-item {{ request()->routeIs('user.create') ? 'active' : '' }}">
                                 <i class="fas fa-user-plus me-2"></i>Tambah User
                             </a>
@@ -92,7 +92,6 @@
                     </div>
                     @endauth
 
-                    <!-- Menu Laporan -->
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fas fa-chart-bar me-1"></i>Laporan
@@ -108,21 +107,21 @@
                                 <i class="fas fa-users me-2"></i>Laporan Anggota
                             </a>
                             <a href="#" class="dropdown-item">
+                                <i class="fas fa-book-dead me-2"></i>Laporan Kematian
+                            </a>
+                            <a href="#" class="dropdown-item">
                                 <i class="fas fa-chart-pie me-2"></i>Statistik
                             </a>
                         </div>
                     </div>
 
-                    <!-- Menu Kontak -->
                     <a href="#" class="nav-item nav-link">
                         <i class="fas fa-phone me-1"></i>Kontak
                     </a>
                 </div>
 
-                <!-- Auth Section -->
                 <div class="d-flex align-items-center">
                     @auth
-                        <!-- User sudah login -->
                         <div class="nav-item dropdown">
                             <a href="#" class="nav-link dropdown-toggle d-flex align-items-center" data-bs-toggle="dropdown">
                                 <div class="user-avatar me-2">
@@ -132,7 +131,6 @@
                                              class="rounded-circle"
                                              style="width: 40px; height: 40px; object-fit: cover; border: 2px solid #0d6efd;">
                                     @else
-                                        <!-- Fallback avatar -->
                                         <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center"
                                              style="width: 40px; height: 40px;">
                                             <i class="fas fa-user text-white"></i>
@@ -154,11 +152,14 @@
                                 <a href="{{ route('dashboard') }}" class="dropdown-item">
                                     <i class="fas fa-tachometer-alt me-2"></i>Dashboard
                                 </a>
-                                <a href="#" class="dropdown-item">
+                                
+                                <a href="{{ route('profile') }}" class="dropdown-item">
                                     <i class="fas fa-user me-2"></i>Profile Saya
                                 </a>
+                                
                                 <div class="dropdown-divider"></div>
-                                <form method="POST" action="{{ route('logout') }}" class="d-inline">
+                                
+                                <form method="POST" action="{{ route('auth.logout') }}" class="d-inline">
                                     @csrf
                                     <button type="submit" class="dropdown-item border-0 bg-transparent">
                                         <i class="fas fa-sign-out-alt me-2"></i>Logout
@@ -167,16 +168,11 @@
                             </div>
                         </div>
                     @else
-                        <!-- User belum login -->
-                        <a href="{{ route('login') }}" class="btn btn-primary btn-sm rounded-pill px-3 me-2">
+                        <a href="{{ route('auth.login') }}" class="btn btn-primary btn-sm rounded-pill px-3 me-2">
                             <i class="fas fa-sign-in-alt me-2"></i>Login
-                        </a>
-                        <a href="{{ route('register') }}" class="btn btn-outline-primary btn-sm rounded-pill px-3">
-                            <i class="fas fa-user-plus me-2"></i>Register
                         </a>
                     @endauth
 
-                    <!-- Search Button -->
                     <button class="btn-search btn btn-primary btn-md-square rounded-circle ms-2" data-bs-toggle="modal" data-bs-target="#searchModal">
                         <i class="fas fa-search text-white"></i>
                     </button>
@@ -186,7 +182,6 @@
     </div>
 </div>
 
-<!-- Search Modal -->
 <div class="modal fade" id="searchModal" tabindex="-1" aria-labelledby="searchModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content rounded-0">
@@ -210,7 +205,6 @@
     </div>
 </div>
 
-<!-- Temporary Debug - Hapus setelah testing -->
 @auth
 <div class="position-fixed bottom-0 start-0 p-3 bg-warning text-dark small" style="z-index: 9999; display: none;" id="debugPanel">
     <strong>Debug Avatar:</strong><br>
@@ -220,7 +214,6 @@
     <button class="btn btn-sm btn-danger mt-1" onclick="document.getElementById('debugPanel').style.display='none'">Tutup</button>
 </div>
 @endauth
-<!-- Navbar End -->
 
 @push('styles')
 <style>

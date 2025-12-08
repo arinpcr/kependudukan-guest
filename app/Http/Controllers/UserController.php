@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\User;
@@ -16,8 +17,8 @@ class UserController extends Controller
         // Query dasar
         $query = User::query();
 
-        // Pencarian
-        if ($request->has('search') && $request->search != '') {
+        // 1. Filter Pencarian (Nama/Email)
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', '%' . $search . '%')
@@ -25,8 +26,13 @@ class UserController extends Controller
             });
         }
 
-        // Sorting
-        if ($request->has('sort')) {
+        // 2. Filter Role
+        if ($request->filled('role')) {
+            $query->where('role', $request->role);
+        }
+
+        // 3. Sorting
+        if ($request->filled('sort')) {
             switch ($request->sort) {
                 case 'name_desc':
                     $query->orderBy('name', 'desc');
@@ -52,10 +58,10 @@ class UserController extends Controller
         }
 
         // Pagination
-        $perPage = $request->has('per_page') ? $request->per_page : 12;
+        $perPage = $request->input('per_page', 12);
         $dataUser = $query->paginate($perPage);
 
-        return view('pages.user.index', compact('dataUser'))->with('request', $request);
+        return view('pages.user.index', compact('dataUser'));
     }
 
     /**
@@ -72,31 +78,30 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email',
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email',
             'password' => 'required|min:8|confirmed',
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'role'     => 'required|in:Super Admin,Admin,User',
+            'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         $data = [
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'role'     => $request->role,
         ];
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
-            $avatar = $request->file('avatar');
-            $avatarName = time() . '_' . uniqid() . '.' . $avatar->getClientOriginalExtension();
-            
-            // Simpan ke storage
-            $avatar->storeAs('public/avatars', $avatarName);
-            $data['avatar'] = $avatarName;
+            // Gunakan cara yang sama dengan DashboardController agar konsisten (public disk)
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $data['avatar'] = basename($path);
         }
 
         User::create($data);
 
-        return redirect()->route('user.index')->with('success', 'Penambahan Data Berhasil!');
+        return redirect()->route('user.index')->with('success', 'User berhasil ditambahkan!');
     }
 
     /**
@@ -112,8 +117,11 @@ class UserController extends Controller
      */
     public function edit(string $id)
     {
-        $data['dataUser'] = User::findOrFail($id);
-        return view('pages.user.edit', $data);
+        // PERBAIKAN DI SINI:
+        // Mengubah nama variabel $user menjadi $dataUser agar cocok dengan view
+        $dataUser = User::findOrFail($id);
+        
+        return view('pages.user.edit', compact('dataUser')); 
     }
 
     /**
@@ -124,14 +132,16 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users,email,' . $user->id,
             'password' => 'nullable|min:8|confirmed',
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'role'     => 'required|in:Super Admin,Admin,User',
+            'avatar'   => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        $user->name = $request->name;
+        $user->name  = $request->name;
         $user->email = $request->email;
+        $user->role  = $request->role;
         
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
@@ -139,22 +149,19 @@ class UserController extends Controller
 
         // Handle avatar upload
         if ($request->hasFile('avatar')) {
-            // Hapus avatar lama jika ada
-            if ($user->avatar && Storage::exists('public/avatars/' . $user->avatar)) {
-                Storage::delete('public/avatars/' . $user->avatar);
+            // Hapus avatar lama (menggunakan disk public agar konsisten)
+            if ($user->avatar && Storage::disk('public')->exists('avatars/' . $user->avatar)) {
+                Storage::disk('public')->delete('avatars/' . $user->avatar);
             }
 
-            $avatar = $request->file('avatar');
-            $avatarName = time() . '_' . uniqid() . '.' . $avatar->getClientOriginalExtension();
-            
-            // Simpan avatar baru
-            $avatar->storeAs('public/avatars', $avatarName);
-            $user->avatar = $avatarName;
+            // Upload baru
+            $path = $request->file('avatar')->store('avatars', 'public');
+            $user->avatar = basename($path);
         }
 
         $user->save();
 
-        return redirect()->route('user.index')->with('success', 'Perubahan Data Berhasil!');
+        return redirect()->route('user.index')->with('success', 'Data user berhasil diperbarui!');
     }
 
     /**
@@ -164,13 +171,13 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         
-        // Hapus avatar jika ada
-        if ($user->avatar && Storage::exists('public/avatars/' . $user->avatar)) {
-            Storage::delete('public/avatars/' . $user->avatar);
+        // Hapus file gambar dari storage saat user dihapus
+        if ($user->avatar && Storage::disk('public')->exists('avatars/' . $user->avatar)) {
+            Storage::disk('public')->delete('avatars/' . $user->avatar);
         }
         
         $user->delete();
         
-        return redirect()->route('user.index')->with('success', 'Data Berhasil Dihapus');
+        return redirect()->route('user.index')->with('success', 'User berhasil dihapus.');
     }
 }

@@ -3,6 +3,7 @@
 @section('title', 'Login Guest - Sistem Kependudukan')
 
 @section('styles')
+{{-- BAGIAN STYLE BIARKAN SAMA PERSIS --}}
 <style>
     :root {
         --bs-primary: #ff4880;
@@ -310,7 +311,7 @@
         </div>
 
         <div class="login-body">
-            <a href="{{ url('dashboard-guest') }}" class="back-link">
+            <a href="{{ url('/') }}" class="back-link">
                 <i class="fas fa-arrow-left"></i> Kembali ke Beranda
             </a>
 
@@ -343,24 +344,13 @@
                 </div>
             @endif
 
-            <form action="{{ route('login') }}" method="POST">
+            <form action="{{ route('auth.login.post') }}" method="POST">
                 @csrf
-
-                 <div class="form-floating">
-                    <input type="username" class="form-control @error('username') is-invalid @enderror"
-                           name="username" id="username" placeholder="username" required>
-                    <label for="username">
-                        <i class="fas fa-lock me-2 text-primary"></i>Username
-                    </label>
-                    @error('username')
-                        <div class="invalid-feedback">{{ $message }}</div>
-                    @enderror
-                </div>
 
                 <div class="form-floating">
                     <input type="email" class="form-control @error('email') is-invalid @enderror"
                            name="email" id="email" value="{{ old('email') }}"
-                           placeholder="name@example.com" required>
+                           placeholder="name@example.com" required autofocus>
                     <label for="email">
                         <i class="fas fa-envelope me-2 text-primary"></i>Email
                     </label>
@@ -381,7 +371,7 @@
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-login">
-                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                    <i class="fas fa-sign-in-alt me-2"></i>Login Masuk
                 </button>
             </form>
 
@@ -391,19 +381,20 @@
                 </a>
             </div>
 
-            <!-- Register Section -->
-            <div class="register-section">
-                <p class="mb-3">Belum punya akun?</p>
-                <a href="{{ route('register') }}" class="register-link">
-                    <i class="fas fa-user-plus"></i>Daftar Akun Baru di sini
-                </a>
+            <div class="register-section text-center mt-4 pt-3 border-top">
+    <p class="mb-2 text-muted">Belum punya akun?</p>
+    <a href="{{ route('auth.register') }}" class="register-link text-decoration-none fw-bold text-primary">
+        <i class="fas fa-user-plus me-1"></i>Daftar Akun Baru di sini
+    </a>
+</div>
+
             </div>
-        </div>
     </div>
 </div>
 @endsection
 
 @section('scripts')
+{{-- Script biarkan sama --}}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Auto focus on email field

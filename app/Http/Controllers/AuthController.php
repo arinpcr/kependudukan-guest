@@ -2,208 +2,88 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    /**
-     * Display login form
-     */
-    public function showLoginForm()
+    // Menampilkan Halaman Login
+    public function index()
     {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
         return view('pages.auth.login-form');
     }
 
-    /**
-     * Display registration form
-     */
+    // Menampilkan Halaman Register (BARU)
     public function showRegistrationForm()
     {
+        if (Auth::check()) {
+            return redirect()->route('dashboard');
+        }
         return view('pages.auth.register');
     }
 
-    /**
-     * Handle login request
-     */
-    public function login(Request $request)
+    // Proses Register (BARU)
+    public function register(Request $request)
     {
-        $guestEmail = 'guest@example.com';
-        $guestPassword = 'Guest123';
-
-        // Validasi input
+        // 1. Validasi Input
         $request->validate([
-            'email' => 'required|email',
-            'password' => ['required', 'min:3', 'regex:/[A-Z]/']
+            'name'      => 'required|string|max:255',
+            'email'     => 'required|email|unique:users,email',
+            'password'  => 'required|min:8|confirmed', // Pastikan field konfirmasi bernama password_confirmation
+            'terms'     => 'required',
         ], [
-            'email.required' => 'Alamat email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 3 karakter.',
-            'password.regex' => 'Password harus mengandung minimal satu huruf kapital.'
+            'email.unique' => 'Email ini sudah terdaftar.',
+            'password.confirmed' => 'Konfirmasi password tidak cocok.',
+            'terms.required' => 'Anda harus menyetujui syarat dan ketentuan.'
         ]);
 
-        // Pengecekan login guest
-        if ($request->email === $guestEmail && $request->password === $guestPassword) {
-            session(['email' => $request->email]);
-            return redirect('/auth/success');
-        }
+        // 2. Buat User Baru
+        User::create([
+            'name'     => $request->name,
+            'email'    => $request->email,
+            'password' => Hash::make($request->password),
+            'role'     => 'User', // <--- PENTING: Paksa role jadi 'User'
+            'avatar'   => null,
+        ]);
 
-        // Pengecekan login user terdaftar
-        $credentials = $this->getCredentials($request);
+        // 3. Redirect ke Login dengan Pesan Sukses
+        return redirect()->route('auth.login')->with('success', 'Registrasi berhasil! Silahkan login.');
+    }
+
+    // Proses Login
+    public function login(Request $request)
+    {
+        $request->validate([
+            'email'    => 'required|email',
+            'password' => 'required',
+        ]);
+
+        $credentials = $request->only('email', 'password');
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            return redirect()->intended('/dashboard');
+            session(['last_login' => now()]);
+
+            return redirect()->route('dashboard')->with('success', 'Login Berhasil!');
         }
 
-        return back()->with('error', 'Email atau password salah! Pastikan huruf kapital sudah benar.');
+        return back()->withErrors([
+            'email' => 'Email atau password salah.',
+        ])->withInput();
     }
 
-    /**
-     * Handle registration request
-     */
-    public function register(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255|min:3',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|confirmed',
-            'terms' => 'required|accepted',
-        ], [
-            'name.required' => 'Nama lengkap wajib diisi.',
-            'name.min' => 'Nama lengkap minimal 3 karakter.',
-            'name.max' => 'Nama lengkap maksimal 255 karakter.',
-            'email.required' => 'Alamat email wajib diisi.',
-            'email.email' => 'Format email tidak valid.',
-            'email.unique' => 'Email sudah terdaftar. Silakan gunakan email lain.',
-            'email.max' => 'Alamat email maksimal 255 karakter.',
-            'password.required' => 'Password wajib diisi.',
-            'password.min' => 'Password minimal 8 karakter.',
-            'password.confirmed' => 'Konfirmasi password tidak sesuai.',
-            'terms.required' => 'Anda harus menyetujui syarat dan ketentuan.',
-            'terms.accepted' => 'Anda harus menyetujui syarat dan ketentuan.',
-        ]);
-
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput()
-                ->with('error', 'Terjadi kesalahan dalam pengisian form.');
-        }
-
-        try {
-            $user = User::create([
-                'name' => $request->name,
-                'email' => $request->email,
-                'password' => Hash::make($request->password),
-            ]);
-
-            // Auto login setelah registrasi (optional)
-            // Auth::login($user);
-
-            return redirect()->route('login')
-                ->with('success', 'Pendaftaran berhasil! Silakan login dengan akun Anda.');
-
-        } catch (\Exception $e) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Terjadi kesalahan sistem. Silakan coba lagi.');
-        }
-    }
-
-    /**
-     * Handle logout request
-     */
+    // Proses Logout
     public function logout(Request $request)
     {
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/');
-    }
 
-    /**
-     * Display success page after login
-     */
-    public function success()
-{
-    $email = session('email');
-
-    // Jika ingin menampilkan username, bisa extract dari email
-    $username = explode('@', $email)[0];
-
-    return view('guest-success', compact('email', 'username'));
-}
-
-    /**
-     * Get credentials for authentication
-     */
-    private function getCredentials(Request $request)
-    {
-        return [
-            'email' => $request->email,
-            'password' => $request->password
-        ];
-    }
-
-    /**
-     * Check email availability (for AJAX)
-     */
-    public function checkEmail(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|email'
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json(['valid' => false, 'message' => 'Format email tidak valid']);
-        }
-
-        $exists = User::where('email', $request->email)->exists();
-
-        return response()->json([
-            'valid' => !$exists,
-            'message' => $exists ? 'Email sudah terdaftar' : 'Email tersedia'
-        ]);
-    }
-
-    // RESTful methods untuk kompatibilitas
-    public function index()
-    {
-        return $this->showLoginForm();
-    }
-
-    public function create()
-    {
-        return $this->showRegistrationForm();
-    }
-
-    public function store(Request $request)
-    {
-        return $this->register($request);
-    }
-
-    public function show(string $id)
-    {
-        abort(404);
-    }
-
-    public function edit(string $id)
-    {
-        abort(404);
-    }
-
-    public function update(Request $request, string $id)
-    {
-        abort(404);
-    }
-
-    public function destroy(string $id)
-    {
-        abort(404);
+        return redirect()->route('auth.login')->with('success', 'Berhasil Logout.');
     }
 }

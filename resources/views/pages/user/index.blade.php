@@ -33,14 +33,16 @@
                         </div>
                     </div>
 
-                    <!-- Search dan Filter Options -->
                     <div class="card mb-4 border-primary">
                         <div class="card-body">
-                            <!-- Search Bar -->
                             <div class="row mb-3">
                                 <div class="col-12">
                                     <label class="form-label"><i class="fas fa-search me-2"></i>Cari User</label>
                                     <form action="{{ route('user.index') }}" method="GET" id="searchForm">
+                                        @if(request('sort')) <input type="hidden" name="sort" value="{{ request('sort') }}"> @endif
+                                        @if(request('role')) <input type="hidden" name="role" value="{{ request('role') }}"> @endif
+                                        @if(request('per_page')) <input type="hidden" name="per_page" value="{{ request('per_page') }}"> @endif
+
                                         <div class="input-group">
                                             <input type="text" 
                                                    class="form-control" 
@@ -65,9 +67,20 @@
                                 @if(request('search'))
                                     <input type="hidden" name="search" value="{{ request('search') }}">
                                 @endif
+                                
                                 <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label"><i class="fas fa-sort me-2"></i>Urutkan Berdasarkan</label>
+                                    <div class="col-md-4">
+                                        <label class="form-label"><i class="fas fa-filter me-2"></i>Filter Role</label>
+                                        <select class="form-select" name="role" onchange="this.form.submit()">
+                                            <option value="">Semua Role</option>
+                                            <option value="Super Admin" {{ request('role') == 'Super Admin' ? 'selected' : '' }}>Super Admin</option>
+                                            <option value="Admin" {{ request('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                            <option value="User" {{ request('role') == 'User' ? 'selected' : '' }}>User</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label"><i class="fas fa-sort me-2"></i>Urutkan</label>
                                         <select class="form-select" name="sort" id="sortBy" onchange="this.form.submit()">
                                             <option value="name" {{ request('sort') == 'name' ? 'selected' : '' }}>Nama A-Z</option>
                                             <option value="name_desc" {{ request('sort') == 'name_desc' ? 'selected' : '' }}>Nama Z-A</option>
@@ -77,8 +90,9 @@
                                             <option value="terlama" {{ request('sort') == 'terlama' ? 'selected' : '' }}>Terlama</option>
                                         </select>
                                     </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label"><i class="fas fa-list me-2"></i>Data Per Halaman</label>
+
+                                    <div class="col-md-4">
+                                        <label class="form-label"><i class="fas fa-list me-2"></i>Tampilkan</label>
                                         <select class="form-select" name="per_page" id="perPage" onchange="this.form.submit()">
                                             <option value="12" {{ request('per_page', 12) == 12 ? 'selected' : '' }}>12 Data</option>
                                             <option value="24" {{ request('per_page') == 24 ? 'selected' : '' }}>24 Data</option>
@@ -91,15 +105,20 @@
                         </div>
                     </div>
 
-                    <!-- Info Pencarian -->
-                    @if(request('search') || request('sort'))
+                    @if(request('search') || request('sort') || request('role'))
                     <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
                         <strong><i class="fas fa-info-circle me-2"></i>Filter Aktif:</strong>
+                        
                         @if(request('search'))
                             <span class="badge bg-primary me-2">Pencarian: "{{ request('search') }}"</span>
                         @endif
+                        
+                        @if(request('role'))
+                            <span class="badge bg-success me-2">Role: {{ request('role') }}</span>
+                        @endif
+
                         @if(request('sort'))
-                            <span class="badge bg-warning me-2">Urutan: 
+                            <span class="badge bg-warning text-dark me-2">Urutan: 
                                 @if(request('sort') == 'name') Nama A-Z
                                 @elseif(request('sort') == 'name_desc') Nama Z-A
                                 @elseif(request('sort') == 'email') Email A-Z
@@ -109,12 +128,12 @@
                                 @endif
                             </span>
                         @endif
-                        <a href="{{ route('user.index') }}" class="btn btn-sm btn-outline-info ms-2">Hapus Filter</a>
+                        
+                        <a href="{{ route('user.index') }}" class="btn btn-sm btn-outline-info ms-2">Reset Filter</a>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                     @endif
 
-                    <!-- Card Layout -->
                     <div class="row g-4">
                         @forelse ($dataUser as $index => $item)
                         <div class="col-12 col-md-6 col-lg-4">
@@ -128,18 +147,33 @@
                                 <div class="card-body">
                                     <div class="mb-3">
                                         <div class="d-flex align-items-center mb-2">
-                                            <i class="fas fa-envelope me-2 text-primary"></i>
-                                            <span class="fw-bold">Email:</span>
+                                            <i class="fas fa-id-badge me-2 text-primary"></i>
+                                            <span class="fw-bold">Role:</span>
                                         </div>
-                                        <p class="ms-4 mb-0">{{ $item->email }}</p>
+                                        <p class="ms-4 mb-0">
+                                            @if($item->role == 'Super Admin')
+                                                <span class="badge bg-danger rounded-pill px-3">
+                                                    <i class="fas fa-crown me-1"></i> Super Admin
+                                                </span>
+                                            @elseif($item->role == 'Admin')
+                                                <span class="badge bg-warning text-dark rounded-pill px-3">
+                                                    <i class="fas fa-user-shield me-1"></i> Admin
+                                                </span>
+                                            @else
+                                                <span class="badge bg-info text-dark rounded-pill px-3">
+                                                    <i class="fas fa-user me-1"></i> User
+                                                </span>
+                                            @endif
+                                        </p>
                                     </div>
+                                    <hr>
 
                                     <div class="mb-3">
                                         <div class="d-flex align-items-center mb-2">
-                                            <i class="fas fa-lock me-2 text-primary"></i>
-                                            <span class="fw-bold">Password:</span>
+                                            <i class="fas fa-envelope me-2 text-primary"></i>
+                                            <span class="fw-bold">Email:</span>
                                         </div>
-                                        <p class="ms-4 mb-0">••••••••</p>
+                                        <p class="ms-4 mb-0 text-break">{{ $item->email }}</p>
                                     </div>
 
                                     <div class="mb-3">
@@ -178,25 +212,11 @@
                             <div class="text-center py-5">
                                 <div class="text-muted">
                                     <i class="fas fa-inbox fa-3x mb-3"></i>
-                                    <h5>
-                                        @if(request('search'))
-                                            Data user tidak ditemukan
-                                        @else
-                                            Tidak ada data User
-                                        @endif
-                                    </h5>
-                                    <p>
-                                        @if(request('search'))
-                                            Coba ubah kata kunci pencarian yang digunakan
-                                        @else
-                                            Silakan tambah user baru dengan mengklik tombol di atas.
-                                        @endif
-                                    </p>
-                                    @if(request('search'))
+                                    <h5>Data user tidak ditemukan</h5>
+                                    <p>Coba ubah filter pencarian atau role.</p>
                                     <a href="{{ route('user.index') }}" class="btn btn-primary mt-2">
-                                        <i class="fas fa-refresh me-2"></i>Tampilkan Semua Data
+                                        <i class="fas fa-refresh me-2"></i>Reset Filter
                                     </a>
-                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -235,12 +255,8 @@
     .card-header {
         border-bottom: 2px solid rgba(0,0,0,0.1);
     }
-    .btn-group .btn {
-        margin: 0 2px;
-    }
-    .badge {
-        font-size: 0.8em;
-        padding: 0.35em 0.65em;
+    .text-break {
+        word-break: break-all;
     }
 </style>
 @endpush
@@ -254,7 +270,7 @@
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
 
-        // Auto-dismiss alerts after 5 seconds
+        // Auto-dismiss alerts
         const alerts = document.querySelectorAll('.alert');
         alerts.forEach(function(alert) {
             setTimeout(function() {
@@ -262,30 +278,6 @@
                 bsAlert.close();
             }, 5000);
         });
-
-        // Enhanced delete confirmation
-        const deleteForms = document.querySelectorAll('form[action*="destroy"]');
-        deleteForms.forEach(function(form) {
-            form.addEventListener('submit', function(e) {
-                const submitBtn = this.querySelector('button[type="submit"]');
-                if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menghapus...';
-                }
-            });
-        });
-
-        // Search form submission on enter
-        const searchInput = document.getElementById('searchUser');
-        if (searchInput) {
-            searchInput.addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    document.getElementById('searchForm').submit();
-                }
-            });
-        }
-
-        console.log('User index page loaded with enhanced features');
     });
 </script>
 @endpush

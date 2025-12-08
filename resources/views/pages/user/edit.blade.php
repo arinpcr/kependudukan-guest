@@ -43,7 +43,6 @@
                         @method('PUT')
                         
                         <div class="row g-4">
-                            <!-- Avatar Section -->
                             <div class="col-12 text-center mb-4">
                                 <div class="avatar-upload-container">
                                     <div class="avatar-preview mb-3">
@@ -97,6 +96,23 @@
                                         <i class="fas fa-envelope me-2 text-primary"></i>Email
                                     </label>
                                     @error('email')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <div class="form-floating">
+                                    <select class="form-select @error('role') is-invalid @enderror" id="role" name="role" required>
+                                        <option value="">-- Pilih Role --</option>
+                                        <option value="Super Admin" {{ old('role', $dataUser->role) == 'Super Admin' ? 'selected' : '' }}>Super Admin</option>
+                                        <option value="Admin" {{ old('role', $dataUser->role) == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                        <option value="User" {{ old('role', $dataUser->role) == 'User' ? 'selected' : '' }}>User</option>
+                                    </select>
+                                    <label for="role">
+                                        <i class="fas fa-user-shield me-2 text-primary"></i>Role Pengguna
+                                    </label>
+                                    @error('role')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -245,7 +261,6 @@
     }
 </script>
 
-<!-- Toast for error messages -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
     <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">
