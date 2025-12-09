@@ -11,7 +11,7 @@
                     <select name="warga_id" class="form-select" required>
                         <option value="">-- Pilih Warga --</option>
                         @foreach($warga as $w)
-                            <option value="{{ $w->warga_id }}">{{ $w->nama }} - {{ $w->nik }}</option>
+                            <option value="{{ $w->warga_id }}">{{ $w->nama }} - {{ $w->no_ktp }}</option>
                         @endforeach
                     </select>
                 </div>

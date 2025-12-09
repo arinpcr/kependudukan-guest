@@ -13,7 +13,7 @@
         <div class="row justify-content-center wow fadeIn" data-wow-delay="0.3s">
             <div class="col-lg-8">
                 <div class="bg-light border border-primary rounded p-5">
-                    
+
                     <a href="{{ route('warga.index') }}" class="btn btn-secondary btn-sm mb-4">
                         <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar Warga
                     </a>
@@ -32,15 +32,18 @@
 
                     <form action="{{ route('warga.store') }}" method="POST">
                         @csrf
-                        
+
                         <div class="row g-4">
+
+                            {{-- KOLOM NIK (DULUNYA NO KTP) --}}
+                            {{-- Di Controller Kematian, kita mengambil data ini ($warga->no_ktp) untuk mengisi NIK otomatis --}}
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control @error('no_ktp') is-invalid @enderror" 
-                                           name="no_ktp" id="no_ktp" value="{{ old('no_ktp') }}" 
-                                           placeholder="Nomor KTP" required>
+                                    <input type="text" class="form-control @error('no_ktp') is-invalid @enderror"
+                                           name="no_ktp" id="no_ktp" value="{{ old('no_ktp') }}"
+                                           placeholder="NIK" required maxlength="16">
                                     <label for="no_ktp">
-                                        <i class="fas fa-id-card me-2 text-primary"></i>Nomor KTP
+                                        <i class="fas fa-id-card me-2 text-primary"></i>NIK (Nomor Induk Kependudukan)
                                     </label>
                                     @error('no_ktp')
                                         <div class="invalid-feedback">{{ $message }}</div>
@@ -50,8 +53,8 @@
 
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control @error('nama') is-invalid @enderror" 
-                                           name="nama" id="nama" value="{{ old('nama') }}" 
+                                    <input type="text" class="form-control @error('nama') is-invalid @enderror"
+                                           name="nama" id="nama" value="{{ old('nama') }}"
                                            placeholder="Nama Lengkap" required>
                                     <label for="nama">
                                         <i class="fas fa-user me-2 text-primary"></i>Nama Lengkap
@@ -64,7 +67,7 @@
 
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <select class="form-select @error('jenis_kelamin') is-invalid @enderror" 
+                                    <select class="form-select @error('jenis_kelamin') is-invalid @enderror"
                                             name="jenis_kelamin" id="jenis_kelamin" required>
                                         <option value="">-- Pilih Jenis Kelamin --</option>
                                         <option value="L" {{ old('jenis_kelamin') == 'L' ? 'selected' : '' }}>Laki-laki</option>
@@ -81,8 +84,8 @@
 
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control @error('agama') is-invalid @enderror" 
-                                           name="agama" id="agama" value="{{ old('agama') }}" 
+                                    <input type="text" class="form-control @error('agama') is-invalid @enderror"
+                                           name="agama" id="agama" value="{{ old('agama') }}"
                                            placeholder="Agama">
                                     <label for="agama">
                                         <i class="fas fa-pray me-2 text-primary"></i>Agama
@@ -95,8 +98,8 @@
 
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control @error('pekerjaan') is-invalid @enderror" 
-                                           name="pekerjaan" id="pekerjaan" value="{{ old('pekerjaan') }}" 
+                                    <input type="text" class="form-control @error('pekerjaan') is-invalid @enderror"
+                                           name="pekerjaan" id="pekerjaan" value="{{ old('pekerjaan') }}"
                                            placeholder="Pekerjaan">
                                     <label for="pekerjaan">
                                         <i class="fas fa-briefcase me-2 text-primary"></i>Pekerjaan
@@ -109,8 +112,8 @@
 
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control @error('telp') is-invalid @enderror" 
-                                           name="telp" id="telp" value="{{ old('telp') }}" 
+                                    <input type="text" class="form-control @error('telp') is-invalid @enderror"
+                                           name="telp" id="telp" value="{{ old('telp') }}"
                                            placeholder="Nomor Telepon">
                                     <label for="telp">
                                         <i class="fas fa-phone me-2 text-primary"></i>Nomor Telepon
@@ -123,8 +126,8 @@
 
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                           name="email" id="email" value="{{ old('email') }}" 
+                                    <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                           name="email" id="email" value="{{ old('email') }}"
                                            placeholder="Alamat Email">
                                     <label for="email">
                                         <i class="fas fa-envelope me-2 text-primary"></i>Alamat Email
@@ -157,18 +160,17 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Format KTP number input (16 digit)
+        // Validasi Input NIK (Hanya Angka & Max 16 Digit)
         const ktpInput = document.getElementById('no_ktp');
         if (ktpInput) {
             ktpInput.addEventListener('input', function(e) {
+                // Hapus karakter selain angka
                 this.value = this.value.replace(/[^0-9]/g, '');
             });
-            
+
             ktpInput.addEventListener('blur', function() {
                 if (this.value.length !== 16 && this.value.length > 0) {
-                    const toast = new bootstrap.Toast(document.getElementById('errorToast'));
-                    document.getElementById('toastMessage').textContent = 'Nomor KTP harus terdiri dari 16 digit';
-                    toast.show();
+                    showToast('NIK harus terdiri dari 16 digit angka');
                     this.focus();
                 }
             });
@@ -182,28 +184,15 @@
             });
         }
 
-        // Auto-capitalize name
-        const nameInput = document.getElementById('nama');
-        if (nameInput) {
-            nameInput.addEventListener('blur', function() {
-                this.value = this.value.toUpperCase();
-            });
-        }
-
-        // Auto-capitalize agama and pekerjaan
-        const agamaInput = document.getElementById('agama');
-        if (agamaInput) {
-            agamaInput.addEventListener('blur', function() {
-                this.value = this.value.toUpperCase();
-            });
-        }
-
-        const pekerjaanInput = document.getElementById('pekerjaan');
-        if (pekerjaanInput) {
-            pekerjaanInput.addEventListener('blur', function() {
-                this.value = this.value.toUpperCase();
-            });
-        }
+        // Auto-capitalize fields
+        ['nama', 'agama', 'pekerjaan'].forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('blur', function() {
+                    this.value = this.value.toUpperCase();
+                });
+            }
+        });
 
         // Form submission loading state
         const form = document.querySelector('form');
@@ -217,9 +206,20 @@
             });
         }
     });
+
+    function showToast(message) {
+        // Pastikan element toast ada di layout atau halaman ini
+        const toastEl = document.getElementById('errorToast');
+        if(toastEl){
+            const toast = new bootstrap.Toast(toastEl);
+            document.getElementById('toastMessage').textContent = message;
+            toast.show();
+        } else {
+            alert(message);
+        }
+    }
 </script>
 
-<!-- Toast for error messages -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
     <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">

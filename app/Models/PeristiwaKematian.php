@@ -14,6 +14,7 @@ class PeristiwaKematian extends Model
 
     protected $fillable = [
         'warga_id',
+        'nik', // <--- DITAMBAHKAN
         'tgl_meninggal',
         'sebab_kematian',
         'tempat_kematian',

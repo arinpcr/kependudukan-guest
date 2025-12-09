@@ -14,16 +14,16 @@ class PeristiwaKematianController extends Controller
     {
         // Query Dasar dengan Relasi
         $query = PeristiwaKematian::with('warga')
-            // Join agar bisa sorting/searching berdasarkan nama warga
             ->join('warga', 'peristiwa_kematian.warga_id', '=', 'warga.warga_id')
-            ->select('peristiwa_kematian.*'); // Ambil kolom tabel kematian saja agar tidak bentrok id
+            ->select('peristiwa_kematian.*');
 
         // 1. Fitur Pencarian
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('warga.nama', 'like', '%' . $search . '%')
-                  ->orWhere('warga.nik', 'like', '%' . $search . '%')
+                  ->orWhere('warga.no_ktp', 'like', '%' . $search . '%') // Cari berdasarkan no_ktp warga
+                  ->orWhere('peristiwa_kematian.nik', 'like', '%' . $search . '%') // Cari berdasarkan nik tersimpan
                   ->orWhere('sebab_kematian', 'like', '%' . $search . '%');
             });
         }
@@ -51,11 +51,10 @@ class PeristiwaKematianController extends Controller
                     break;
             }
         } else {
-            // Default sort: Tanggal meninggal terbaru
             $query->orderBy('tgl_meninggal', 'desc');
         }
 
-        // 3. Pagination Dinamis
+        // 3. Pagination
         $perPage = $request->input('per_page', 12);
         $data = $query->paginate($perPage);
 
@@ -64,6 +63,8 @@ class PeristiwaKematianController extends Controller
 
     public function create()
     {
+        // Ambil warga yang statusnya masih HIDUP (asumsi logis)
+        // Tapi untuk sekarang ambil semua dulu tidak apa-apa
         $warga = Warga::all();
         return view('pages.kematian.create', compact('warga'));
     }
@@ -74,10 +75,21 @@ class PeristiwaKematianController extends Controller
             'warga_id' => 'required|exists:warga,warga_id',
             'tgl_meninggal' => 'required|date',
             'sebab_kematian' => 'required|string',
-            // Tambahkan validasi lain jika ada kolom tambahan (misal: tempat_kematian, keterangan)
         ]);
 
-        $kematian = PeristiwaKematian::create($request->all());
+        // 1. Ambil Data Warga
+        $warga = Warga::findOrFail($request->warga_id);
+
+        // 2. Siapkan Data
+        $data = $request->all();
+
+        // --- PERBAIKAN UTAMA DISINI ---
+        // Kita ambil dari 'no_ktp' milik Warga, lalu simpan ke kolom 'nik' milik Kematian
+        $data['nik'] = $warga->no_ktp;
+        // ------------------------------
+
+        // 3. Simpan
+        $kematian = PeristiwaKematian::create($data);
 
         return redirect()->route('kematian.show', $kematian->kematian_id)
                          ->with('success', 'Data berhasil disimpan. Silakan upload bukti dokumen.');
@@ -93,47 +105,39 @@ class PeristiwaKematianController extends Controller
         return view('pages.kematian.show', compact('kematian', 'documents'));
     }
 
-    // --- BAGIAN YANG DITAMBAHKAN (EDIT & UPDATE) ---
-
-    /**
-     * Menampilkan Form Edit
-     */
     public function edit($id)
     {
-        // Ambil data kematian berdasarkan ID
         $kematian = PeristiwaKematian::findOrFail($id);
-        
-        // Ambil data semua warga untuk dropdown (jika user ingin mengubah siapa yang meninggal)
         $warga = Warga::all();
 
         return view('pages.kematian.edit', compact('kematian', 'warga'));
     }
 
-    /**
-     * Memproses Update Data
-     */
     public function update(Request $request, $id)
     {
-        // 1. Validasi Input (Sama seperti store)
         $request->validate([
             'warga_id' => 'required|exists:warga,warga_id',
             'tgl_meninggal' => 'required|date',
             'sebab_kematian' => 'required|string',
-            // Tambahkan validasi lain jika ada
         ]);
 
-        // 2. Cari data yang mau diedit
         $kematian = PeristiwaKematian::findOrFail($id);
 
-        // 3. Update data
-        $kematian->update($request->all());
+        // 1. Ambil Data Warga (Siapa tau user ganti orangnya)
+        $warga = Warga::findOrFail($request->warga_id);
 
-        // 4. Redirect kembali ke index atau show
+        // 2. Update data
+        $data = $request->all();
+
+        // --- PERBAIKAN UTAMA DISINI JUGA ---
+        $data['nik'] = $warga->no_ktp;
+        // -----------------------------------
+
+        $kematian->update($data);
+
         return redirect()->route('kematian.index')
                          ->with('success', 'Data kematian berhasil diperbarui!');
     }
-
-    // ------------------------------------------------
 
     public function storeMedia(Request $request)
     {
@@ -169,12 +173,11 @@ class PeristiwaKematianController extends Controller
         $media->delete();
         return back()->with('success', 'File berhasil dihapus!');
     }
-    
+
     public function destroy($id)
     {
         $kematian = PeristiwaKematian::findOrFail($id);
-        
-        // Hapus media terkait
+
         $medias = Media::where('ref_table', 'peristiwa_kematian')->where('ref_id', $id)->get();
         foreach($medias as $m){
              if (Storage::exists('public/uploads/' . $m->file_name)) {
@@ -182,7 +185,7 @@ class PeristiwaKematianController extends Controller
             }
             $m->delete();
         }
-        
+
         $kematian->delete();
         return redirect()->route('kematian.index')->with('success', 'Data berhasil dihapus.');
     }

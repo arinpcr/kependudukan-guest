@@ -43,8 +43,8 @@
                                     <div class="col-md-8">
                                          <label class="form-label"><i class="fas fa-search me-2"></i>Cari Almarhum</label>
                                         <div class="input-group">
-                                            <input type="text" class="form-control" name="search" id="searchKematian" 
-                                                   placeholder="Cari nama, NIK, atau sebab kematian..." 
+                                            <input type="text" class="form-control" name="search" id="searchKematian"
+                                                   placeholder="Cari nama, NIK, atau sebab kematian..."
                                                    value="{{ request('search') }}">
                                             <button class="btn btn-primary" type="submit" id="btnSearch">
                                                 <i class="fas fa-search"></i>
@@ -91,7 +91,7 @@
                         <div class="col-12 col-md-6 col-lg-4">
                             {{-- CARD STANDAR (Border Primary, Shadow Small) --}}
                             <div class="card h-100 shadow-sm border-primary card-hover">
-                                
+
                                 {{-- HEADER STANDAR (Bg Primary, Text White) --}}
                                 <div class="card-header bg-primary text-white d-flex justify-content-between align-items-start">
                                     <div style="max-width: 65%;">
@@ -99,8 +99,9 @@
                                             <i class="fas fa-user me-2"></i>{{ $item->warga->nama ?? 'Warga Terhapus' }}
                                         </h6>
                                         <small class="d-block text-white-50 mt-1">
-                                            NIK: {{ $item->warga->nik ?? '-' }}
-                                        </small>
+    {{-- Kita panggil kolom 'nik' langsung dari tabel kematian --}}
+    NIK: {{ $item->nik ?? $item->warga->no_ktp ?? '-' }}
+</small>
                                     </div>
                                     <span class="badge bg-light text-primary">
                                         <i class="fas fa-calendar-alt me-1"></i> {{ \Carbon\Carbon::parse($item->tgl_meninggal)->format('d/m/Y') }}
@@ -137,7 +138,7 @@
                                             <a href="{{ route('kematian.edit', $item->kematian_id) }}" class="btn btn-warning text-white flex-grow-1">
                                                 <i class="fas fa-edit me-2"></i> Edit
                                             </a>
-                                            
+
                                             {{-- Form Hapus (50% width) --}}
                                             <form action="{{ route('kematian.destroy', $item->kematian_id) }}" method="POST" class="flex-grow-1" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
                                                 @csrf

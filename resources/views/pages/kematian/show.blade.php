@@ -2,7 +2,7 @@
 
 @section('content')
 <div class="container py-5">
-    
+
     {{-- BAGIAN 1: INFORMASI DATA --}}
     <div class="card mb-4 border-primary">
         <div class="card-header bg-primary text-white">
@@ -12,7 +12,7 @@
             <div class="row">
                 <div class="col-md-6">
                     <p><strong>Nama:</strong> {{ $kematian->warga->nama ?? '-' }}</p>
-                    <p><strong>NIK:</strong> {{ $kematian->warga->nik ?? '-' }}</p>
+                    <p><strong>NIK:</strong> {{ $kematian->nik ?? $kematian->warga->no_ktp ?? '-' }}</p>
                 </div>
                 <div class="col-md-6">
                     <p><strong>Tanggal Meninggal:</strong> {{ $kematian->tgl_meninggal }}</p>
@@ -30,11 +30,11 @@
             <h5 class="mb-0"><i class="fas fa-paperclip me-2"></i>File Pendukung (Bukti)</h5>
         </div>
         <div class="card-body">
-            
+
             {{-- Form Upload --}}
             <form action="{{ route('kematian.upload') }}" method="POST" enctype="multipart/form-data" class="row g-3 align-items-end border p-3 rounded bg-light mb-4">
                 @csrf
-                
+
                 {{-- INPUT HIDDEN PENTING (SESUAI MODUL) --}}
                 <input type="hidden" name="ref_table" value="peristiwa_kematian">
                 <input type="hidden" name="ref_id" value="{{ $kematian->kematian_id }}">
@@ -71,16 +71,16 @@
                                 <i class="fas fa-file-pdf fa-4x text-danger"></i>
                             @endif
                         </div>
-                        
+
                         <div class="card-body p-2 text-center">
                             <small class="fw-bold d-block text-truncate">{{ $doc->caption }}</small>
                             <small class="text-muted" style="font-size: 10px;">{{ $doc->file_name }}</small>
-                            
+
                             <div class="mt-2 btn-group w-100">
                                 <a href="{{ asset('storage/uploads/'.$doc->file_name) }}" target="_blank" class="btn btn-sm btn-outline-primary">
                                     <i class="fas fa-download"></i>
                                 </a>
-                                
+
                                 {{-- Tombol Hapus --}}
                                 <form action="{{ route('media.delete', $doc->media_id) }}" method="POST" onsubmit="return confirm('Hapus file ini?')">
                                     @csrf

@@ -80,10 +80,15 @@ class AnggotaKeluargaController extends Controller
     /**
      * Menampilkan semua anggota dari semua keluarga
      */
+    /**
+     * Menampilkan semua anggota dari semua keluarga (KHUSUS KEPALA KELUARGA)
+     */
     public function allAnggota(Request $request)
     {
-        // Query dasar
-        $query = AnggotaKeluarga::with(['keluarga.kepalaKeluarga', 'warga']);
+        // ✅ PERUBAHAN UTAMA: Tambahkan where('hubungan', 'kepala_keluarga') di sini
+        // Ini memaksa query hanya mengambil data Kepala Keluarga sejak awal.
+        $query = AnggotaKeluarga::with(['keluarga.kepalaKeluarga', 'warga'])
+                    ->where('hubungan', 'kepala_keluarga');
 
         // Pencarian
         if ($request->has('search') && $request->search != '') {
@@ -98,12 +103,10 @@ class AnggotaKeluargaController extends Controller
             });
         }
 
-        // Filter hubungan
-        if ($request->has('hubungan') && $request->hubungan != '') {
-            $query->where('hubungan', $request->hubungan);
-        }
+        // ❌ HAPUS BAGIAN FILTER HUBUNGAN MANUAL
+        // Bagian "if ($request->has('hubungan')..." dihapus karena sudah di-filter permanen di atas.
 
-        // Filter KK
+        // Filter KK (Tetap dipertahankan jika ingin filter spesifik KK)
         if ($request->has('kk_id') && $request->kk_id != '') {
             $query->where('kk_id', $request->kk_id);
         }
@@ -141,7 +144,7 @@ class AnggotaKeluargaController extends Controller
         $perPage = $request->has('per_page') ? $request->per_page : 12;
         $anggota = $query->paginate($perPage);
 
-        // Ambil data KK untuk filter
+        // Ambil data KK untuk dropdown filter (opsional)
         $keluargas = KeluargaKk::with('kepalaKeluarga')->get();
 
         return view('pages.anggota-keluarga.all', compact('anggota', 'keluargas'));

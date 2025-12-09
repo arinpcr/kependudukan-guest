@@ -15,7 +15,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'avatar', // Pastikan ini ada agar bisa di-update
+        'avatar', // Pastikan ini
+        //  ke profile pictures
     ];
 
     protected $hidden = [
@@ -38,7 +39,7 @@ class User extends Authenticatable
             // Ini akan mengarah ke http://domain.test/storage/avatars/namafile.jpg
             return asset('storage/avatars/' . $this->avatar);
         }
-        
+
         // Default avatar jika user belum upload
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=0d6efd&background=e3f2fd';
     }

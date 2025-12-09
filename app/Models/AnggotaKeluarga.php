@@ -12,15 +12,17 @@ class AnggotaKeluarga extends Model
     protected $table = 'anggota_keluarga';
     protected $primaryKey = 'anggota_id';
 
-    // ✅ TAMBAHKAN INI untuk Route Model Binding
-    public function getRouteKeyName()
-    {
-        return 'anggota_id';
-    }
+    // // ✅ TAMBAHKAN INI untuk Route Model Binding
+    // public function getRouteKeyName()
+
+    // {
+    //     return 'anggota_id';
+    // }
 
     protected $fillable = [
+        'anggota_id',
         'kk_id',
-        'warga_id', 
+        'warga_id',
         'hubungan'
     ];
 
@@ -43,7 +45,7 @@ class AnggotaKeluarga extends Model
             'kepala_keluarga' => 'Kepala Keluarga',
             'istri' => 'Istri',
             'anak' => 'Anak',
-            'menantu' => 'Menantu', 
+            'menantu' => 'Menantu',
             'cucu' => 'Cucu',
             'orang_tua' => 'Orang Tua',
             'lainnya' => 'Lainnya'

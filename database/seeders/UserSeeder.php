@@ -2,67 +2,57 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
 {
     public function run()
     {
-        $faker = \Faker\Factory::create();
-
-        // Data user tetap untuk testing
+        // Data user tetap sesuai permintaanmu
         $fixedUsers = [
             [
-                'name' => 'Admin System',
-                'email' => 'admin@kependudukan.com',
-                'password' => Hash::make('password123'),
+                'name' => 'Arin Super',
+                'email' => 'super@admin.com',
+                'role' => 'Super Admin', // Role tertinggi
+                'password' => Hash::make('password'), // Password: password
                 'email_verified_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
-                'name' => 'Petugas Kependudukan', 
-                'email' => 'petugas@kependudukan.com',
-                'password' => Hash::make('password123'),
+                'name' => 'Arin Admin',
+                'email' => 'admin@admin.com',
+                'role' => 'Admin', // Role menengah
+                'password' => Hash::make('password'), // Password: password
                 'email_verified_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
             [
-                'name' => 'Warga Contoh',
-                'email' => 'warga@kependudukan.com',
-                'password' => Hash::make('password123'),
+                'name' => 'Arin User',
+                'email' => 'user@user.com',
+                'role' => 'User', // Role standar
+                'password' => Hash::make('password'), // Password: password
                 'email_verified_at' => now(),
-                'created_at' => now(),
-                'updated_at' => now(),
             ],
         ];
 
-        // Insert data tetap
-        foreach ($fixedUsers as $user) {
-            DB::table('users')->insert($user);
+        // Loop untuk membuat user
+        foreach ($fixedUsers as $userData) {
+            // updateOrCreate: Cek apakah email sudah ada?
+            // Jika ada -> Update datanya
+            // Jika tidak -> Buat baru
+            User::updateOrCreate(
+                ['email' => $userData['email']], // Kunci pencarian
+                $userData // Data yang disimpan
+            );
         }
 
-        // Generate 100 data user random mengikuti pattern yang diminta
-        foreach (range(1, 100) as $index) {
-            DB::table('users')->insert([
-                'name' => $faker->name,
-                'email' => $faker->unique()->safeEmail,
-                'password' => Hash::make('password123'),
-                'email_verified_at' => $faker->optional(0.7)->dateTimeBetween('-1 year', 'now'), // 70% verified
-                'created_at' => $faker->dateTimeBetween('-2 years', 'now'),
-                'updated_at' => now(),
-            ]);
-        }
+        // Opsional: Generate dummy user tambahan jika butuh data banyak
+        // \App\Models\User::factory(10)->create();
 
-        $this->command->info('User Seeder berhasil dijalankan!');
-        $this->command->info('Total user created: 103');
-        $this->command->info('Login testing:');
-        $this->command->info('Email: admin@kependudukan.com / Password: password123');
-        $this->command->info('Email: petugas@kependudukan.com / Password: password123');
-        $this->command->info('Email: warga@kependudukan.com / Password: password123');
+        $this->command->info('User tetap berhasil dibuat!');
+        $this->command->info('---------------------------------------');
+        $this->command->info('Login Super Admin: super@admin.com | password');
+        $this->command->info('Login Admin      : admin@admin.com | password');
+        $this->command->info('Login User       : user@user.com   | password');
     }
 }
