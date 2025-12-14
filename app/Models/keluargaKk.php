@@ -10,9 +10,9 @@ class KeluargaKk extends Model
     use HasFactory;
 
     protected $table = 'keluarga_kk';
-    protected $primaryKey = 'kk_id';
+    protected $primaryKey = 'kk_id'; // Sesuai migration
 
-    // ✅ TAMBAHKAN INI untuk Route Model Binding
+    // Route binding (agar url /keluarga/{kk_id} terbaca)
     public function getRouteKeyName()
     {
         return 'kk_id';
@@ -34,17 +34,5 @@ class KeluargaKk extends Model
     public function anggotaKeluarga()
     {
         return $this->hasMany(AnggotaKeluarga::class, 'kk_id', 'kk_id');
-    }
-
-    public function anggotaWarga()
-    {
-        return $this->hasManyThrough(
-            Warga::class,
-            AnggotaKeluarga::class,
-            'kk_id',
-            'warga_id',  
-            'kk_id',
-            'warga_id'
-        );
     }
 }

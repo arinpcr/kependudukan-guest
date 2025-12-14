@@ -1,8 +1,8 @@
 <?php
 
-// File: routes/web.php
-
 use Illuminate\Support\Facades\Route;
+
+// --- Import Controllers ---
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\WargaController;
@@ -10,6 +10,15 @@ use App\Http\Controllers\KeluargaKkController;
 use App\Http\Controllers\AnggotaKeluargaController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PeristiwaKematianController;
+use App\Http\Controllers\PeristiwaKelahiranController;
+use App\Http\Controllers\PeristiwaPindahController; // [BARU] Import Controller Pindah
+
+// --- Import Models (PENTING untuk Halaman Laporan) ---
+use App\Models\Warga;
+use App\Models\KeluargaKK;
+use App\Models\PeristiwaKematian;
+use App\Models\PeristiwaKelahiran;
+use App\Models\PeristiwaPindah; // [BARU] Import Model Pindah
 
 /*
 |--------------------------------------------------------------------------
@@ -22,17 +31,42 @@ Route::get('/', function () {
     return view('guest.dashboard');
 })->name('landing');
 
-// Halaman About
+// Halaman About (Tentang Kami)
 Route::get('/about', function () {
     return view('pages.about');
 })->name('about');
 
-// Route Authentication (Login & Register)
+// Halaman Kontak
+Route::get('/kontak', function () {
+    return view('pages.kontak');
+})->name('kontak');
+
+// Halaman Laporan (Statistik)
+Route::get('/laporan', function () {
+    // 1. Hitung Total Data
+    $totalWarga     = Warga::count();
+    $totalKK        = KeluargaKK::count();
+    $totalKematian  = PeristiwaKematian::count();
+    $totalKelahiran = PeristiwaKelahiran::count();
+    $totalPindah    = PeristiwaPindah::count(); // [BARU] Hitung Pindah
+
+    // 2. Data Grafik Gender
+    $laki      = Warga::where('jenis_kelamin', 'L')->count();
+    $perempuan = Warga::where('jenis_kelamin', 'P')->count();
+
+    return view('pages.laporan', compact(
+        'totalWarga', 'totalKK', 'totalKematian', 'totalKelahiran', 'totalPindah',
+        'laki', 'perempuan'
+    ));
+})->name('laporan.index');
+
+// --- Authentication (Login & Register) ---
 Route::get('/login', [AuthController::class, 'index'])->name('auth.login');
 Route::post('/login', [AuthController::class, 'login'])->name('auth.login.post');
 
 Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('auth.register');
 Route::post('/register', [AuthController::class, 'register'])->name('auth.register.post');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -42,20 +76,17 @@ Route::post('/register', [AuthController::class, 'register'])->name('auth.regist
 */
 Route::middleware(['checkislogin'])->group(function () {
 
-    // Logout Route
+    // Logout
     Route::post('/logout', [AuthController::class, 'logout'])->name('auth.logout');
 
-    // Dashboard (Bisa diakses semua user yang login)
+    // Dashboard Utama
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // === PROFILE ROUTES ===
-    // Lihat Profile
+    // --- Profile Management ---
     Route::get('/profile', [DashboardController::class, 'profile'])->name('profile');
-    
-    // Edit & Update Profile (Data Diri & Avatar)
     Route::get('/profile/edit', [DashboardController::class, 'editProfile'])->name('profile.edit');
     Route::put('/profile/update', [DashboardController::class, 'updateProfile'])->name('profile.update');
-
+    
     // Ganti Password
     Route::get('/profile/password', [DashboardController::class, 'editPassword'])->name('profile.password');
     Route::put('/profile/password', [DashboardController::class, 'updatePassword'])->name('profile.password.update');
@@ -68,17 +99,17 @@ Route::middleware(['checkislogin'])->group(function () {
     */
     Route::middleware(['checkrole:Admin,Super Admin'])->group(function () {
 
-        // === MANAJEMEN WARGA ===
+        // --- Manajemen Warga ---
         Route::resource('warga', WargaController::class);
         Route::delete('/warga/document/{document}', [WargaController::class, 'deleteDocument'])
             ->name('warga.document.delete');
 
-        // === MANAJEMEN KELUARGA (KK) ===
+        // --- Manajemen Keluarga (KK) ---
         Route::resource('keluarga', KeluargaKkController::class, [
             'parameters' => ['keluarga' => 'keluarga'],
         ]);
 
-        // === MANAJEMEN ANGGOTA KELUARGA (Nested Routes) ===
+        // --- Manajemen Anggota Keluarga (Nested) ---
         Route::prefix('keluarga/{keluarga}')->group(function () {
             Route::get('/anggota', [AnggotaKeluargaController::class, 'index'])->name('anggota-keluarga.index');
             Route::get('/anggota/create', [AnggotaKeluargaController::class, 'create'])->name('anggota-keluarga.create');
@@ -89,15 +120,22 @@ Route::middleware(['checkislogin'])->group(function () {
             Route::delete('/anggota/{anggota}', [AnggotaKeluargaController::class, 'destroy'])->name('anggota-keluarga.destroy');
         });
 
-        // Route List Semua Anggota
+        // List Semua Anggota (Tanpa Grup KK)
         Route::get('/anggota-keluarga', [AnggotaKeluargaController::class, 'allAnggota'])->name('anggota-keluarga.all');
 
-        // === MANAJEMEN PERISTIWA KEMATIAN ===
-        // Resource ini sudah otomatis membuat route untuk index, create, store, show, EDIT, UPDATE, destroy
+        // --- Manajemen Kematian ---
         Route::resource('kematian', PeristiwaKematianController::class);
-        
-        // Custom Route untuk Media Upload & Delete
         Route::post('kematian/upload', [PeristiwaKematianController::class, 'storeMedia'])->name('kematian.upload');
+        
+        // --- Manajemen Kelahiran ---
+        Route::resource('kelahiran', PeristiwaKelahiranController::class);
+        Route::post('kelahiran/upload', [PeristiwaKelahiranController::class, 'storeMedia'])->name('kelahiran.upload');
+
+        // --- [BARU] Manajemen Pindah (Mutasi) ---
+        Route::resource('pindah', PeristiwaPindahController::class);
+        Route::post('pindah/upload', [PeristiwaPindahController::class, 'storeMedia'])->name('pindah.upload');
+
+        // Delete Media (Global - Bisa dipakai Kematian, Kelahiran, Pindah)
         Route::delete('media/{media_id}', [PeristiwaKematianController::class, 'deleteMedia'])->name('media.delete');
     });
 
@@ -114,7 +152,7 @@ Route::middleware(['checkislogin'])->group(function () {
 
 });
 
-// Fallback Route (Jika akses halaman ngawur, kembalikan ke home)
+// Fallback Route (Jika akses URL ngawur -> ke Home)
 Route::fallback(function () {
     return redirect('/');
 });

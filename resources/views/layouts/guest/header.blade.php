@@ -23,34 +23,47 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarCollapse">
                 <div class="navbar-nav mx-auto">
+                    {{-- MENU HOME --}}
                     <a href="{{ url('/') }}" class="nav-item nav-link {{ request()->is('/') ? 'active' : '' }}">
                         <i class="fas fa-home me-1"></i>Home
                     </a>
                     
+                    {{-- MENU ABOUT --}}
                     <a href="{{ route('about') }}" class="nav-item nav-link {{ request()->routeIs('about') ? 'active' : '' }}">
                         <i class="fas fa-info-circle me-1"></i>About
                     </a>
 
+                    {{-- MENU DATA (Dropdown) --}}
                     <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
+                        <a href="#" class="nav-link dropdown-toggle {{ request()->is('warga*') || request()->is('keluarga*') || request()->is('kematian*') || request()->is('kelahiran*') || request()->is('pindah*') ? 'active' : '' }}" data-bs-toggle="dropdown">
                             <i class="fas fa-database me-1"></i>Data
                         </a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
                             @auth
-                                <a href="{{ route('warga.index') }}" class="dropdown-item {{ request()->routeIs('warga.index') ? 'active' : '' }}">
+                                <a href="{{ route('warga.index') }}" class="dropdown-item">
                                     <i class="fas fa-users me-2"></i>Data Warga
                                 </a>
-                                <a href="{{ route('keluarga.index') }}" class="dropdown-item {{ request()->routeIs('keluarga.index') ? 'active' : '' }}">
+                                <a href="{{ route('keluarga.index') }}" class="dropdown-item">
                                     <i class="fas fa-home me-2"></i>Data Keluarga
                                 </a>
-                                <a href="{{ route('anggota-keluarga.all') }}" class="dropdown-item {{ request()->routeIs('anggota-keluarga.all') ? 'active' : '' }}">
+                                <a href="{{ route('anggota-keluarga.all') }}" class="dropdown-item">
                                     <i class="fas fa-user-friends me-2"></i>Data Anggota Keluarga
                                 </a>
-                                <a href="{{ route('kematian.index') }}" class="dropdown-item {{ request()->routeIs('kematian.*') ? 'active' : '' }}">
+                                
+                                {{-- [UPDATE] Data Kelahiran, Kematian & Pindah --}}
+                                <a href="{{ route('kelahiran.index') }}" class="dropdown-item">
+                                    <i class="fas fa-baby me-2"></i>Data Kelahiran
+                                </a>
+                                <a href="{{ route('kematian.index') }}" class="dropdown-item">
                                     <i class="fas fa-book-dead me-2"></i>Data Kematian
                                 </a>
+                                {{-- [BARU] Data Pindah --}}
+                                <a href="{{ route('pindah.index') }}" class="dropdown-item">
+                                    <i class="fas fa-truck-moving me-2"></i>Data Pindah
+                                </a>
+
                                 <div class="dropdown-divider"></div>
-                                <a href="{{ route('user.index') }}" class="dropdown-item {{ request()->routeIs('user.index') ? 'active' : '' }}">
+                                <a href="{{ route('user.index') }}" class="dropdown-item">
                                     <i class="fas fa-user-cog me-2"></i>Data User
                                 </a>
                             @else
@@ -63,59 +76,61 @@
                                 <a href="{{ route('anggota-keluarga.all') }}" class="dropdown-item">
                                     <i class="fas fa-user-friends me-2"></i>Data Anggota Keluarga
                                 </a>
+                                <a href="{{ route('kelahiran.index') }}" class="dropdown-item">
+                                    <i class="fas fa-baby me-2"></i>Data Kelahiran
+                                </a>
                                 <a href="{{ route('kematian.index') }}" class="dropdown-item">
                                     <i class="fas fa-book-dead me-2"></i>Data Kematian
+                                </a>
+                                {{-- [BARU] Data Pindah (Guest View) --}}
+                                <a href="{{ route('pindah.index') }}" class="dropdown-item">
+                                    <i class="fas fa-truck-moving me-2"></i>Data Pindah
                                 </a>
                             @endauth
                         </div>
                     </div>
 
                     @auth
+                    {{-- MENU TAMBAH DATA (Dropdown - Hanya Admin) --}}
                     <div class="nav-item dropdown">
                         <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                             <i class="fas fa-plus-circle me-1"></i>Tambah Data
                         </a>
                         <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                            <a href="{{ route('warga.create') }}" class="dropdown-item {{ request()->routeIs('warga.create') ? 'active' : '' }}">
+                            <a href="{{ route('warga.create') }}" class="dropdown-item">
                                 <i class="fas fa-user-plus me-2"></i>Tambah Warga
                             </a>
-                            <a href="{{ route('keluarga.create') }}" class="dropdown-item {{ request()->routeIs('keluarga.create') ? 'active' : '' }}">
+                            <a href="{{ route('keluarga.create') }}" class="dropdown-item">
                                 <i class="fas fa-house-user me-2"></i>Tambah Keluarga
                             </a>
-                            <a href="{{ route('kematian.create') }}" class="dropdown-item {{ request()->routeIs('kematian.create') ? 'active' : '' }}">
+                            
+                            {{-- [UPDATE] Tambah Kelahiran, Kematian & Pindah --}}
+                            <a href="{{ route('kelahiran.create') }}" class="dropdown-item">
+                                <i class="fas fa-baby-carriage me-2"></i>Tambah Kelahiran
+                            </a>
+                            <a href="{{ route('kematian.create') }}" class="dropdown-item">
                                 <i class="fas fa-file-medical me-2"></i>Tambah Kematian
                             </a>
-                            <a href="{{ route('user.create') }}" class="dropdown-item {{ request()->routeIs('user.create') ? 'active' : '' }}">
+                            {{-- [BARU] Tambah Pindah --}}
+                            <a href="{{ route('pindah.create') }}" class="dropdown-item">
+                                <i class="fas fa-truck-moving me-2"></i>Tambah Pindah
+                            </a>
+
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ route('user.create') }}" class="dropdown-item">
                                 <i class="fas fa-user-plus me-2"></i>Tambah User
                             </a>
                         </div>
                     </div>
                     @endauth
 
-                    <div class="nav-item dropdown">
-                        <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                            <i class="fas fa-chart-bar me-1"></i>Laporan
-                        </a>
-                        <div class="dropdown-menu m-0 bg-secondary rounded-0">
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-file-alt me-2"></i>Laporan Warga
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-file-contract me-2"></i>Laporan Keluarga
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-users me-2"></i>Laporan Anggota
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-book-dead me-2"></i>Laporan Kematian
-                            </a>
-                            <a href="#" class="dropdown-item">
-                                <i class="fas fa-chart-pie me-2"></i>Statistik
-                            </a>
-                        </div>
-                    </div>
+                    {{-- MENU LAPORAN --}}
+                    <a href="{{ route('laporan.index') }}" class="nav-item nav-link {{ request()->routeIs('laporan.index') ? 'active' : '' }}">
+                        <i class="fas fa-chart-pie me-1"></i>Laporan
+                    </a>
 
-                    <a href="#" class="nav-item nav-link">
+                    {{-- MENU KONTAK --}}
+                    <a href="{{ route('kontak') }}" class="nav-item nav-link {{ request()->routeIs('kontak') ? 'active' : '' }}">
                         <i class="fas fa-phone me-1"></i>Kontak
                     </a>
                 </div>
@@ -140,11 +155,7 @@
                                 <div class="user-info">
                                     <div class="user-name small fw-bold">{{ Auth::user()->name }}</div>
                                     <div class="user-role small text-muted">
-                                        @if(Auth::user()->role ?? false)
-                                            {{ ucfirst(Auth::user()->role) }}
-                                        @else
-                                            User
-                                        @endif
+                                        {{ ucfirst(Auth::user()->role ?? 'User') }}
                                     </div>
                                 </div>
                             </a>
@@ -205,16 +216,6 @@
     </div>
 </div>
 
-@auth
-<div class="position-fixed bottom-0 start-0 p-3 bg-warning text-dark small" style="z-index: 9999; display: none;" id="debugPanel">
-    <strong>Debug Avatar:</strong><br>
-    User: {{ Auth::user()->name }}<br>
-    Avatar: {{ Auth::user()->avatar ?? 'NULL' }}<br>
-    Avatar URL: {{ Auth::user()->avatar_url }}<br>
-    <button class="btn btn-sm btn-danger mt-1" onclick="document.getElementById('debugPanel').style.display='none'">Tutup</button>
-</div>
-@endauth
-
 @push('styles')
 <style>
     .user-avatar img {
@@ -238,24 +239,10 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Toggle debug panel dengan shortcut Ctrl+D
-        document.addEventListener('keydown', function(e) {
-            if (e.ctrlKey && e.key === 'd') {
-                e.preventDefault();
-                const debugPanel = document.getElementById('debugPanel');
-                if (debugPanel) {
-                    debugPanel.style.display = debugPanel.style.display === 'none' ? 'block' : 'none';
-                }
-            }
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl)
         });
-
-        // Initialize tooltips
-        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        const tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-            return new bootstrap.Tooltip(tooltipTriggerEl);
-        });
-
-        console.log('Header loaded with avatar support');
     });
 </script>
 @endpush

@@ -18,9 +18,18 @@
                         <i class="fas fa-arrow-left me-2"></i>Kembali ke Daftar KK
                     </a>
 
+                    {{-- MENAMPILKAN PESAN ERROR DARI CONTROLLER (CATCH BLOCK) --}}
+                    @if (session('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong><i class="fas fa-exclamation-circle me-2"></i>Gagal!</strong>
+                            {{ session('error') }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    @endif
+
                     @if ($errors->any())
                         <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong><i class="fas fa-exclamation-triangle me-2"></i>Terjadi kesalahan:</strong>
+                            <strong><i class="fas fa-exclamation-triangle me-2"></i>Periksa inputan Anda:</strong>
                             <ul class="mb-0 mt-2">
                                 @foreach ($errors->all() as $error)
                                     <li>{{ $error }}</li>
@@ -38,7 +47,7 @@
                                 <div class="form-floating">
                                     <input type="text" class="form-control @error('kk_nomor') is-invalid @enderror" 
                                            name="kk_nomor" id="kk_nomor" value="{{ old('kk_nomor') }}" 
-                                           placeholder="Nomor KK" required>
+                                           placeholder="Nomor KK" required maxlength="16">
                                     <label for="kk_nomor">
                                         <i class="fas fa-id-card me-2 text-primary"></i>Nomor KK
                                     </label>
@@ -141,11 +150,12 @@
             
             kkInput.addEventListener('blur', function() {
                 if (this.value.length !== 16 && this.value.length > 0) {
-                    // Using Bootstrap toast for better UX
-                    const toast = new bootstrap.Toast(document.getElementById('errorToast'));
+                    const toastEl = document.getElementById('errorToast');
+                    const toast = new bootstrap.Toast(toastEl);
                     document.getElementById('toastMessage').textContent = 'Nomor KK harus terdiri dari 16 digit';
                     toast.show();
-                    this.focus();
+                    
+                    // [FIX] MENGHAPUS this.focus() AGAR TIDAK MENGGANGGU TOMBOL SUBMIT
                 }
             });
         }
@@ -180,15 +190,17 @@
             form.addEventListener('submit', function(e) {
                 const submitBtn = this.querySelector('button[type="submit"]');
                 if (submitBtn) {
-                    submitBtn.disabled = true;
-                    submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+                    // Beri sedikit jeda agar form terkirim sebelum button disabled
+                    setTimeout(() => {
+                        submitBtn.disabled = true;
+                        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Menyimpan...';
+                    }, 100);
                 }
             });
         }
     });
 </script>
 
-<!-- Toast for error messages -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
     <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">

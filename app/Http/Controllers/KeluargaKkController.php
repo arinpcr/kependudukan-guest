@@ -4,146 +4,125 @@ namespace App\Http\Controllers;
 
 use App\Models\KeluargaKk;
 use App\Models\Warga;
+use App\Models\AnggotaKeluarga;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class KeluargaKkController extends Controller
 {
-    /**
-     * Menampilkan daftar semua data keluarga_kk.
-     */
     public function index(Request $request)
     {
-        // Query dasar dengan eager loading
         $query = KeluargaKk::with('kepalaKeluarga');
 
-        // Pencarian
-        if ($request->has('search') && $request->search != '') {
+        if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function($q) use ($search) {
                 $q->where('kk_nomor', 'like', '%' . $search . '%')
                   ->orWhere('alamat', 'like', '%' . $search . '%')
-                  ->orWhere('rt', 'like', '%' . $search . '%')
-                  ->orWhere('rw', 'like', '%' . $search . '%')
                   ->orWhereHas('kepalaKeluarga', function($q2) use ($search) {
                       $q2->where('nama', 'like', '%' . $search . '%');
                   });
             });
         }
 
-        // Filter RT
-        if ($request->has('rt') && $request->rt != '') {
-            $query->where('rt', $request->rt);
-        }
+        if ($request->filled('rt')) $query->where('rt', $request->rt);
+        if ($request->filled('rw')) $query->where('rw', $request->rw);
 
-        // Filter RW
-        if ($request->has('rw') && $request->rw != '') {
-            $query->where('rw', $request->rw);
-        }
-
-        // Sorting
-        if ($request->has('sort')) {
+        if ($request->filled('sort')) {
             switch ($request->sort) {
-                case 'kk_nomor_desc':
-                    $query->orderBy('kk_nomor', 'desc');
-                    break;
-                case 'alamat':
-                    $query->orderBy('alamat', 'asc');
-                    break;
-                case 'alamat_desc':
-                    $query->orderBy('alamat', 'desc');
-                    break;
-                case 'terbaru':
-                    $query->orderBy('created_at', 'desc');
-                    break;
-                case 'terlama':
-                    $query->orderBy('created_at', 'asc');
-                    break;
-                default:
-                    $query->orderBy('kk_nomor', 'asc');
-                    break;
+                case 'kk_nomor_desc': $query->orderBy('kk_nomor', 'desc'); break;
+                case 'alamat': $query->orderBy('alamat', 'asc'); break;
+                case 'alamat_desc': $query->orderBy('alamat', 'desc'); break;
+                case 'terbaru': $query->orderBy('created_at', 'desc'); break;
+                case 'terlama': $query->orderBy('created_at', 'asc'); break;
+                default: $query->orderBy('kk_nomor', 'asc'); break;
             }
         } else {
             $query->orderBy('kk_nomor', 'asc');
         }
 
-        // Pagination
-        $perPage = $request->has('per_page') ? $request->per_page : 12;
-        $keluarga = $query->paginate($perPage);
+        $keluarga = $query->paginate($request->input('per_page', 12));
 
         return view('pages.keluarga.index', compact('keluarga'))->with('request', $request);
     }
 
-    /**
-     * Menampilkan formulir untuk membuat data KK baru.
-     */
     public function create()
     {
         $warga = Warga::orderBy('nama', 'asc')->get();
+        // Pastikan return view ke folder yang benar
         return view('pages.keluarga.create', compact('warga'));
     }
 
-    /**
-     * Menyimpan data KK baru ke database.
-     */
     public function store(Request $request)
     {
         $request->validate([
-            'kk_nomor' => 'required|string|max:50|unique:keluarga_kk,kk_nomor',
-            'kepala_keluarga_warga_id' => 'required|integer|exists:warga,warga_id',
-            'alamat' => 'required|string|max:255',
-            'rt' => 'required|string|max:3',
-            'rw' => 'required|string|max:3',
+            'kk_nomor' => 'required|unique:keluarga_kk,kk_nomor|numeric|digits:16',
+            'kepala_keluarga_warga_id' => 'required|exists:warga,warga_id',
+            'alamat' => 'required|string',
+            'rt' => 'required|numeric',
+            'rw' => 'required|numeric',
         ]);
 
-        KeluargaKk::create($request->all());
+        DB::beginTransaction();
 
-        return redirect()->route('keluarga.index')
-                         ->with('success', 'Data Keluarga KK berhasil ditambahkan.');
+        try {
+            // 1. Simpan Data KK
+            $kk = KeluargaKK::create([
+                'kk_nomor' => $request->kk_nomor,
+                'kepala_keluarga_warga_id' => $request->kepala_keluarga_warga_id,
+                'alamat' => $request->alamat,
+                'rt' => $request->rt,
+                'rw' => $request->rw,
+            ]);
+
+            // 2. Simpan Anggota Keluarga (Kepala Keluarga)
+            // PERHATIKAN NAMA KOLOM DI BAWAH INI SANGAT PENTING
+            AnggotaKeluarga::create([
+                'kk_id' => $kk->kk_id, // Gunakan 'kk_id' bukan 'keluarga_id'
+                'warga_id' => $request->kepala_keluarga_warga_id,
+                'hubungan' => 'kepala_keluarga', // Gunakan 'hubungan' (kecil snake_case) sesuai ENUM migration
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('keluarga.index')
+                             ->with('success', 'KK berhasil dibuat & Kepala Keluarga otomatis ditambahkan!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Tampilkan error spesifik agar ketahuan jika ada salah
+            return back()->with('error', 'Gagal menyimpan: ' . $e->getMessage())->withInput();
+        }
     }
 
-    /**
-     * Menampilkan detail satu data KK.
-     * ✅ DIPERBAIKI: Gunakan Route Model Binding dengan benar
-     */
-    public function show(KeluargaKk $keluarga)
-    {
-        // Load relasi yang diperlukan
-        $keluarga->load(['kepalaKeluarga', 'anggotaKeluarga.warga']);
-        
-        return view('pages.keluarga.show', compact('keluarga'));
-    }
-
-    /**
-     * Menampilkan formulir untuk mengedit data KK.
-     */
     public function edit(KeluargaKk $keluarga)
     {
         $warga = Warga::orderBy('nama', 'asc')->get();
         return view('pages.keluarga.edit', compact('keluarga', 'warga'));
     }
 
-    /**
-     * Memperbarui data KK di database.
-     */
     public function update(Request $request, KeluargaKk $keluarga)
     {
         $request->validate([
-            'kk_nomor' => 'required|string|max:50|unique:keluarga_kk,kk_nomor,' . $keluarga->kk_id . ',kk_id',
-            'kepala_keluarga_warga_id' => 'required|integer|exists:warga,warga_id',
+            'kk_nomor' => 'required|numeric|digits:16|unique:keluarga_kk,kk_nomor,' . $keluarga->kk_id . ',kk_id',
+            'kepala_keluarga_warga_id' => 'required|exists:warga,warga_id',
             'alamat' => 'required|string|max:255',
-            'rt' => 'required|string|max:3',
-            'rw' => 'required|string|max:3',
+            'rt' => 'required',
+            'rw' => 'required',
         ]);
 
-        $keluarga->update($request->all());
+        $keluarga->update([
+            'kk_nomor' => $request->kk_nomor,
+            'kepala_keluarga_warga_id' => $request->kepala_keluarga_warga_id,
+            'alamat' => $request->alamat,
+            'rt' => $request->rt,
+            'rw' => $request->rw,
+        ]);
 
         return redirect()->route('keluarga.index')
                          ->with('success', 'Data Keluarga KK berhasil diperbarui.');
     }
 
-    /**
-     * Menghapus data KK dari database.
-     */
     public function destroy(KeluargaKk $keluarga)
     {
         $keluarga->delete();

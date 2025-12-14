@@ -30,7 +30,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('warga.update', $warga) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('warga.update', $warga) }}" method="POST">
                         @csrf
                         @method('PUT')
                         
@@ -136,74 +136,6 @@
                                 </div>
                             </div>
 
-                            <!-- Dokumen KK Section -->
-                            <div class="col-12">
-                                <div class="card border-info">
-                                    <div class="card-header bg-info text-white">
-                                        <h5 class="mb-0">
-                                            <i class="fas fa-file-upload me-2"></i>Upload Dokumen Kartu Keluarga (KK)
-                                        </h5>
-                                    </div>
-                                    <div class="card-body">
-                                        <!-- Current Documents -->
-                                        @if($warga->documents->count() > 0)
-                                        <div class="mb-3">
-                                            <h6 class="text-info">
-                                                <i class="fas fa-files me-2"></i>Dokumen Saat Ini:
-                                            </h6>
-                                            <div class="list-group">
-                                                @foreach($warga->documents as $document)
-                                                <div class="list-group-item d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        <i class="{{ $document->file_icon }} me-2"></i>
-                                                        {{ $document->original_name }}
-                                                        <small class="text-muted ms-2">
-                                                            ({{ number_format($document->file_size / 1024, 2) }} KB)
-                                                        </small>
-                                                    </div>
-                                                    <div class="btn-group btn-group-sm">
-                                                        <a href="{{ $document->file_url }}" 
-                                                           target="_blank" 
-                                                           class="btn btn-outline-primary btn-sm">
-                                                            <i class="fas fa-eye"></i>
-                                                        </a>
-                                                        <a href="{{ $document->file_url }}" 
-                                                           download="{{ $document->original_name }}"
-                                                           class="btn btn-outline-success btn-sm">
-                                                            <i class="fas fa-download"></i>
-                                                        </a>
-                                                    </div>
-                                                </div>
-                                                @endforeach
-                                            </div>
-                                        </div>
-                                        @endif
-
-                                        <!-- File Upload -->
-                                        <div class="mb-3">
-                                            <label class="form-label fw-bold">
-                                                <i class="fas fa-plus me-2 text-success"></i>Tambah Dokumen Baru
-                                            </label>
-                                            <input type="file" 
-                                                   class="form-control @error('documents.*') is-invalid @enderror" 
-                                                   name="documents[]" 
-                                                   id="documents" 
-                                                   multiple
-                                                   accept=".jpg,.jpeg,.png,.pdf">
-                                            <small class="form-text text-muted">
-                                                Format: JPG, JPEG, PNG, PDF. Maksimal 5MB per file. Dapat memilih multiple file.
-                                            </small>
-                                            @error('documents.*')
-                                                <div class="invalid-feedback">{{ $message }}</div>
-                                            @enderror
-                                        </div>
-
-                                        <!-- File Preview -->
-                                        <div id="filePreview" class="mt-3"></div>
-                                    </div>
-                                </div>
-                            </div>
-
                             <div class="col-12">
                                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                     <a href="{{ route('warga.index') }}" class="btn btn-secondary me-md-2 px-4">
@@ -249,79 +181,15 @@
             });
         }
 
-        // Auto-capitalize name
-        const nameInput = document.getElementById('nama');
-        if (nameInput) {
-            nameInput.addEventListener('blur', function() {
-                this.value = this.value.toUpperCase();
-            });
-        }
-
-        // Auto-capitalize agama and pekerjaan
-        const agamaInput = document.getElementById('agama');
-        if (agamaInput) {
-            agamaInput.addEventListener('blur', function() {
-                this.value = this.value.toUpperCase();
-            });
-        }
-
-        const pekerjaanInput = document.getElementById('pekerjaan');
-        if (pekerjaanInput) {
-            pekerjaanInput.addEventListener('blur', function() {
-                this.value = this.value.toUpperCase();
-            });
-        }
-
-        // File preview for documents
-        const documentsInput = document.getElementById('documents');
-        const filePreview = document.getElementById('filePreview');
-
-        if (documentsInput && filePreview) {
-            documentsInput.addEventListener('change', function(e) {
-                filePreview.innerHTML = '';
-                
-                if (this.files.length > 0) {
-                    const fileList = document.createElement('div');
-                    fileList.className = 'list-group';
-                    
-                    Array.from(this.files).forEach((file, index) => {
-                        const fileItem = document.createElement('div');
-                        fileItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-                        
-                        const fileInfo = document.createElement('div');
-                        fileInfo.innerHTML = `
-                            <i class="fas fa-file me-2 text-primary"></i>
-                            ${file.name}
-                            <small class="text-muted ms-2">(${(file.size / 1024).toFixed(2)} KB)</small>
-                        `;
-                        
-                        const removeBtn = document.createElement('button');
-                        removeBtn.type = 'button';
-                        removeBtn.className = 'btn btn-outline-danger btn-sm';
-                        removeBtn.innerHTML = '<i class="fas fa-times"></i>';
-                        removeBtn.onclick = function() {
-                            // Create new DataTransfer to remove file
-                            const dt = new DataTransfer();
-                            Array.from(documentsInput.files).forEach((f, i) => {
-                                if (i !== index) dt.items.add(f);
-                            });
-                            documentsInput.files = dt.files;
-                            fileItem.remove();
-                            
-                            if (documentsInput.files.length === 0) {
-                                filePreview.innerHTML = '';
-                            }
-                        };
-                        
-                        fileItem.appendChild(fileInfo);
-                        fileItem.appendChild(removeBtn);
-                        fileList.appendChild(fileItem);
-                    });
-                    
-                    filePreview.appendChild(fileList);
-                }
-            });
-        }
+        // Auto-capitalize fields
+        ['nama', 'agama', 'pekerjaan'].forEach(id => {
+            const input = document.getElementById(id);
+            if (input) {
+                input.addEventListener('blur', function() {
+                    this.value = this.value.toUpperCase();
+                });
+            }
+        });
 
         // Form submission loading state
         const form = document.querySelector('form');
@@ -337,13 +205,17 @@
     });
 
     function showToast(message) {
-        const toast = new bootstrap.Toast(document.getElementById('errorToast'));
-        document.getElementById('toastMessage').textContent = message;
-        toast.show();
+        const toastEl = document.getElementById('errorToast');
+        if(toastEl){
+            const toast = new bootstrap.Toast(toastEl);
+            document.getElementById('toastMessage').textContent = message;
+            toast.show();
+        } else {
+            alert(message);
+        }
     }
 </script>
 
-<!-- Toast for error messages -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
     <div id="errorToast" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
         <div class="d-flex">

@@ -12,18 +12,10 @@ class AnggotaKeluarga extends Model
     protected $table = 'anggota_keluarga';
     protected $primaryKey = 'anggota_id';
 
-    // // ✅ TAMBAHKAN INI untuk Route Model Binding
-    // public function getRouteKeyName()
-
-    // {
-    //     return 'anggota_id';
-    // }
-
     protected $fillable = [
-        'anggota_id',
-        'kk_id',
+        'kk_id',       // HARUS kk_id (sesuai migration)
         'warga_id',
-        'hubungan'
+        'hubungan'     // HARUS hubungan (sesuai migration)
     ];
 
     // Relasi ke KeluargaKk
@@ -38,7 +30,7 @@ class AnggotaKeluarga extends Model
         return $this->belongsTo(Warga::class, 'warga_id', 'warga_id');
     }
 
-    // Accessor untuk label hubungan
+    // Accessor untuk label hubungan (Opsional, buat tampilan cantik)
     public function getHubunganLabelAttribute()
     {
         $labels = [

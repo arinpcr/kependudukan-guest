@@ -8,31 +8,24 @@
     <meta content="" name="keywords">
     <meta content="" name="description">
 
-    <!-- CSS -->
     @extends('layouts.guest.css')
 
-    <!-- Font Awesome (untuk ikon WhatsApp & About Page) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 
 <body>
-    <!-- Spinner -->
     <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
         <div class="spinner-grow text-primary" role="status"></div>
     </div>
 
-    <!-- Header -->
     @include('layouts.guest.header')
 
-    <!-- Main Content -->
     <main>
         @yield('content')
     </main>
 
-    <!-- Footer -->
     @include('layouts.guest.footer')
 
-    <!-- Floating WhatsApp Button -->
     <a href="https://wa.me/6281234567890?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20Sistem%20Kependudukan."
        class="whatsapp-float" target="_blank" rel="noopener" title="Hubungi kami di WhatsApp">
         <i class="fab fa-whatsapp"></i>
@@ -73,7 +66,6 @@
         }
     </style>
 
-    <!-- JavaScript -->
     @include('layouts.guest.js')
 </body>
 </html>

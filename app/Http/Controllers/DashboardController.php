@@ -3,28 +3,55 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Hash; // PENTING: Untuk fitur ganti password
 use Illuminate\Validation\Rule;
+// 1. Grouping Facades (Bawaan Laravel)
+use Illuminate\Support\Facades\{Auth, Hash, Storage};
+
+// 2. Grouping Models (Agar hemat baris)
+use App\Models\{
+    Warga,
+    KeluargaKK,
+    PeristiwaKematian,
+    PeristiwaKelahiran,
+    PeristiwaPindah,
+    User
+};
 
 class DashboardController extends Controller
 {
     /**
-     * Menampilkan Dashboard Utama
+     * Menampilkan Dashboard Utama dengan Statistik
      */
     public function index()
     {
-        return view('guest.dashboard');
+        // Data Statistik
+        $totalWarga     = Warga::count();
+        $totalKK        = KeluargaKK::count();
+        $totalKematian  = PeristiwaKematian::count();
+        $totalKelahiran = PeristiwaKelahiran::count();
+        $totalPindah    = PeristiwaPindah::count(); 
+
+        // Statistik Gender
+        $totalLaki      = Warga::where('jenis_kelamin', 'L')->count();
+        $totalPerempuan = Warga::where('jenis_kelamin', 'P')->count();
+
+        return view('pages.dashboard', compact(
+            'totalWarga', 
+            'totalKK', 
+            'totalKematian', 
+            'totalKelahiran', 
+            'totalPindah', 
+            'totalLaki', 
+            'totalPerempuan'
+        ));
     }
 
     /**
-     * Menampilkan Halaman Profile (Read Only)
+     * Menampilkan Halaman Profile
      */
     public function profile()
     {
-        $user = Auth::user();
-        return view('pages.profile', compact('user'));
+        return view('pages.profile', ['user' => Auth::user()]);
     }
 
     /**
@@ -32,52 +59,42 @@ class DashboardController extends Controller
      */
     public function editProfile()
     {
-        $user = Auth::user();
-        return view('pages.profile-edit', compact('user'));
+        return view('pages.profile-edit', ['user' => Auth::user()]);
     }
 
     /**
-     * Memproses Update Profile (Data Diri & Avatar)
+     * Memproses Update Profile
      */
     public function updateProfile(Request $request)
     {
         $user = Auth::user();
 
-        // 1. Validasi
         $request->validate([
             'name'   => 'required|string|max:255',
             'email'  => ['required', 'email', Rule::unique('users')->ignore($user->id)],
-            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048', // Maks 2MB
+            'avatar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
 
-        // 2. Set Data Text (Nama & Email)
         $user->name  = $request->name;
         $user->email = $request->email;
 
-        // 3. Cek apakah user mengupload avatar baru?
         if ($request->hasFile('avatar')) {
-            
-            // Hapus avatar lama jika ada (dan bukan default)
-            // Kita cek apakah file lama ada di disk 'public'
+            // Hapus avatar lama
             if ($user->avatar && Storage::disk('public')->exists('avatars/' . $user->avatar)) {
                 Storage::disk('public')->delete('avatars/' . $user->avatar);
             }
-
-            // Simpan file baru ke folder: storage/app/public/avatars
+            // Simpan avatar baru
             $path = $request->file('avatar')->store('avatars', 'public');
-            
-            // Ambil nama filenya saja untuk disimpan di database
             $user->avatar = basename($path);
         }
 
-        // 4. Simpan perubahan ke Database
         $user->save();
 
         return redirect()->route('profile')->with('success', 'Profile berhasil diperbarui!');
     }
 
     /**
-     * Menampilkan Form Ganti Password (FITUR BARU)
+     * Menampilkan Form Ganti Password
      */
     public function editPassword()
     {
@@ -85,11 +102,10 @@ class DashboardController extends Controller
     }
 
     /**
-     * Memproses Ganti Password (FITUR BARU)
+     * Memproses Ganti Password
      */
     public function updatePassword(Request $request)
     {
-        // 1. Validasi Input
         $request->validate([
             'current_password' => 'required',
             'password'         => 'required|min:8|confirmed',
@@ -97,13 +113,10 @@ class DashboardController extends Controller
 
         $user = Auth::user();
 
-        // 2. Cek apakah password lama yang diinput user COCOK dengan yang di database?
         if (!Hash::check($request->current_password, $user->password)) {
-            // Jika salah, kembalikan dengan error
             return back()->withErrors(['current_password' => 'Password saat ini tidak cocok.']);
         }
 
-        // 3. Jika benar, update password baru (di-hash)
         $user->update([
             'password' => Hash::make($request->password)
         ]);
