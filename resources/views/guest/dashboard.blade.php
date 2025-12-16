@@ -8,7 +8,7 @@
     <div class="container py-5">
         <div class="row g-5 align-items-center">
             <div class="col-lg-7 col-md-12">
-                <h1 class="mb-3 text-primary">Selamat Datang di Sistem Kependudukan</h1>
+                <h1 class="mb-3 display-2 text-primary">Selamat Datang di Sistem Kependudukan</h1>
                 <h1 class="mb-5 display-1 text-white">Kelola Data Penduduk Dengan Mudah</h1>
                 <a href="{{ route('warga.index') }}" class="btn btn-primary px-4 py-3 px-md-5 me-4 btn-border-radius">Mulai Sekarang</a>
                 <a href="{{ route('about') }}" class="btn btn-primary px-4 py-3 px-md-5 btn-border-radius">Pelajari Lebih Lanjut</a>

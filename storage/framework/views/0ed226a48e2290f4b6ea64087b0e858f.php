@@ -1,7 +1,6 @@
 <?php $__env->startSection('title', 'Login Guest - Sistem Kependudukan'); ?>
 
 <?php $__env->startSection('styles'); ?>
-
 <style>
     :root {
         --bs-primary: #ff4880;
@@ -10,8 +9,16 @@
         --bs-dark: #000000;
     }
 
+    /* --- BACKGROUND GAMBAR --- */
     body {
-        background: linear-gradient(135deg, #ffe6f0, #ffc6d9);
+        background: linear-gradient(135deg, rgba(255, 72, 128, 0.8), rgba(255, 198, 217, 0.9)),
+                    url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+        
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        
         font-family: 'Montserrat', sans-serif;
         min-height: 100vh;
         display: flex;
@@ -33,12 +40,13 @@
     }
 
     .login-card {
-        background: var(--bs-white);
+        background: rgba(255, 255, 255, 0.95);
         border-radius: 15px;
-        box-shadow: 0 15px 35px rgba(255, 72, 128, 0.1);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         overflow: hidden;
         border: none;
         transition: transform 0.3s ease;
+        backdrop-filter: blur(5px);
     }
 
     .login-card:hover {
@@ -73,12 +81,16 @@
         z-index: 2;
     }
 
-    .login-header i {
-        font-size: 3rem;
+    /* [UBAH] Style untuk Logo di Header Login */
+    .login-header img {
+        height: 50px; /* Ukuran disamakan dengan header home */
+        width: auto;
         margin-bottom: 20px;
-        display: block;
+        display: inline-block; /* Agar bisa di-center text-align */
         position: relative;
         z-index: 2;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); /* Sedikit bayangan agar pop-up */
     }
 
     .login-header small {
@@ -103,11 +115,13 @@
         font-size: 15px;
         font-family: 'Montserrat', sans-serif;
         transition: all 0.3s ease;
+        background-color: #f8f9fa;
     }
 
     .form-control:focus {
         border-color: var(--bs-primary);
         box-shadow: 0 0 0 0.2rem rgba(255, 72, 128, 0.25);
+        background-color: #fff;
     }
 
     .form-label {
@@ -128,12 +142,14 @@
         width: 100%;
         position: relative;
         overflow: hidden;
+        color: white;
     }
 
     .btn-login:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(255, 72, 128, 0.4);
         background: linear-gradient(135deg, #ff2d6d, var(--bs-primary));
+        color: white;
     }
 
     .btn-login:active {
@@ -205,10 +221,6 @@
         transition: transform 0.3s ease;
     }
 
-    .back-link:hover i {
-        transform: translateX(-3px);
-    }
-
     .btn-close {
         background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23ff4880'%3e%3cpath d='M.293.293a1 1 0 0 1 1.414 0L8 6.586 14.293.293a1 1 0 1 1 1.414 1.414L9.414 8l6.293 6.293a1 1 0 0 1-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 0 1-1.414-1.414L6.586 8 .293 1.707a1 1 0 0 1 0-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
     }
@@ -222,45 +234,6 @@
         color: var(--bs-primary) !important;
     }
 
-    .border-primary {
-        border-color: var(--bs-primary) !important;
-    }
-
-    /* Spinner styles matching your CSS */
-    #spinner {
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity .8s ease-out, visibility 0s linear .5s;
-        z-index: 99999;
-    }
-
-    #spinner.show {
-        transition: opacity .8s ease-out, visibility 0s linear .0s;
-        visibility: visible;
-        opacity: 1;
-    }
-
-    /* Button styles matching your CSS */
-    .btn {
-        font-weight: 600;
-        transition: .5s;
-    }
-
-    .btn.btn-primary {
-        border: 0;
-        color: var(--bs-white);
-    }
-
-    .btn.btn-primary:hover {
-        background: var(--bs-secondary);
-        color: var(--bs-primary);
-    }
-
-    .btn-border-radius {
-        border-radius: 25% 10%;
-    }
-
-    /* Register link section */
     .register-section {
         text-align: center;
         margin-top: 30px;
@@ -303,8 +276,10 @@
 <div class="login-container">
     <div class="login-card">
         <div class="login-header">
-            <i class="fas fa-user-lock"></i>
-            <h2>Login Guest</h2>
+            
+            <img src="<?php echo e(asset('assets-guest/img/logo2.png')); ?>" alt="Logo">
+            
+            <h2>Login</h2>
             <small>Sistem Kependudukan</small>
         </div>
 
@@ -407,20 +382,19 @@ unset($__errorArgs, $__bag); ?>
                 </a>
             </div>
 
-            <div class="register-section text-center mt-4 pt-3 border-top">
-    <p class="mb-2 text-muted">Belum punya akun?</p>
-    <a href="<?php echo e(route('auth.register')); ?>" class="register-link text-decoration-none fw-bold text-primary">
-        <i class="fas fa-user-plus me-1"></i>Daftar Akun Baru di sini
-    </a>
-</div>
-
+            <div class="register-section">
+                <p>Belum punya akun?</p>
+                <a href="<?php echo e(route('auth.register')); ?>" class="register-link">
+                    <i class="fas fa-user-plus me-1"></i>Daftar Akun Baru di sini
+                </a>
             </div>
+
+        </div>
     </div>
 </div>
 <?php $__env->stopSection(); ?>
 
 <?php $__env->startSection('scripts'); ?>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Auto focus on email field

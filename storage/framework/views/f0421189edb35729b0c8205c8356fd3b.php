@@ -7,7 +7,7 @@
     
     <div class="card mb-4 border-primary shadow-sm">
         <div class="card-header bg-primary text-white">
-            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Detail Data Perpindahan</h5>
+            <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Detail Peristiwa Pindah</h5>
         </div>
         <div class="card-body">
             <div class="row">
@@ -15,19 +15,24 @@
                     <table class="table table-borderless">
                         <tr><td width="150" class="fw-bold text-muted">Nama Warga</td><td class="fw-bold">: <?php echo e($pindah->warga->nama ?? '-'); ?></td></tr>
                         <tr><td class="fw-bold text-muted">NIK</td><td>: <?php echo e($pindah->warga->no_ktp ?? '-'); ?></td></tr>
-                        <tr><td class="fw-bold text-muted">Tanggal Pindah</td><td class="text-danger fw-bold">: <?php echo e(\Carbon\Carbon::parse($pindah->tgl_pindah)->format('d F Y')); ?></td></tr>
+                        <tr><td class="fw-bold text-muted">Tgl Pindah</td><td class="text-primary fw-bold">: <?php echo e(\Carbon\Carbon::parse($pindah->tgl_pindah)->format('d F Y')); ?></td></tr>
+                        <tr><td class="fw-bold text-muted">No. Surat</td><td>: <?php echo e($pindah->no_surat ?? '-'); ?></td></tr>
                     </table>
                 </div>
                 <div class="col-md-6">
                     <table class="table table-borderless">
                         <tr><td width="150" class="fw-bold text-muted">Alamat Tujuan</td><td>: <?php echo e($pindah->alamat_tujuan); ?></td></tr>
-                        <tr><td class="fw-bold text-muted">Alasan / Ket</td><td>: <?php echo e($pindah->alasan ?? '-'); ?></td></tr>
-                        <tr><td class="fw-bold text-muted">Nomor Surat</td><td>: <?php echo e($pindah->no_surat ?? '-'); ?></td></tr>
+                        <tr><td class="fw-bold text-muted">Keterangan</td><td>: <?php echo e($pindah->alasan ?? '-'); ?></td></tr>
                     </table>
                 </div>
             </div>
             <div class="mt-3">
                 <a href="<?php echo e(route('pindah.index')); ?>" class="btn btn-secondary"><i class="fas fa-arrow-left me-2"></i>Kembali</a>
+                 <?php if(Auth::check() && (Auth::user()->role == 'Admin' || Auth::user()->role == 'Super Admin')): ?>
+                <a href="<?php echo e(route('pindah.edit', $pindah->pindah_id)); ?>" class="btn btn-warning text-white ms-2">
+                    <i class="fas fa-edit me-2"></i>Edit Data
+                </a>
+                <?php endif; ?>
             </div>
         </div>
     </div>
@@ -35,10 +40,12 @@
     
     <div class="card shadow-sm border-0">
         <div class="card-header bg-light border-bottom">
-            <h5 class="mb-0 text-primary"><i class="fas fa-paperclip me-2"></i>Dokumen Pendukung</h5>
+            <h5 class="mb-0 text-primary"><i class="fas fa-paperclip me-2"></i>File Pendukung (Surat Pindah/Pengantar)</h5>
         </div>
         <div class="card-body">
 
+            
+             <?php if(Auth::check() && (Auth::user()->role == 'Admin' || Auth::user()->role == 'Super Admin')): ?>
             <form action="<?php echo e(route('pindah.upload')); ?>" method="POST" enctype="multipart/form-data" class="row g-3 align-items-end border p-4 rounded bg-light mb-5">
                 <?php echo csrf_field(); ?>
                 <input type="hidden" name="ref_id" value="<?php echo e($pindah->pindah_id); ?>">
@@ -46,7 +53,7 @@
                 <div class="col-md-5">
                     <label class="form-label fw-bold">Pilih File</label>
                     <input type="file" name="files[]" class="form-control" multiple required>
-                    <small class="text-muted">Format: JPG, PNG, PDF (Max 2MB)</small>
+                    <small class="text-muted">JPG, PNG, PDF (Max 5MB)</small>
                 </div>
                 <div class="col-md-5">
                     <label class="form-label fw-bold">Keterangan</label>
@@ -56,25 +63,28 @@
                     <button type="submit" class="btn btn-success w-100 h-100"><i class="fas fa-upload me-2"></i> Upload</button>
                 </div>
             </form>
+            <?php endif; ?>
 
-            
             <h6 class="mb-3 border-bottom pb-2 fw-bold text-primary">Daftar Dokumen Tersimpan:</h6>
 
             <div class="row g-4">
+                
                 <?php $__empty_1 = true; $__currentLoopData = $documents; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $doc): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                     <div class="card h-100 shadow-sm border-0 overflow-hidden" style="border-radius: 12px;">
-                        
+
                         
                         <div class="card-img-top d-flex flex-column justify-content-center align-items-center p-3"
                              style="height: 180px; background-color: #ffeef0;">
                             
                             <?php if(str_contains($doc->mime_type, 'image')): ?>
+                                
                                 <img src="<?php echo e(asset('storage/uploads/' . $doc->file_name)); ?>"
                                      alt="<?php echo e($doc->caption); ?>"
                                      class="img-fluid rounded shadow-sm"
                                      style="max-height: 150px; object-fit: cover;">
                             <?php else: ?>
+                                
                                 <i class="fas fa-file-pdf fa-4x text-danger mb-3"></i>
                                 <span class="badge bg-danger rounded-pill px-3 py-2">Dokumen PDF</span>
                             <?php endif; ?>
@@ -92,11 +102,13 @@
                             </small>
 
                             <div class="btn-group w-100 shadow-sm" role="group">
+                                
                                 <a href="<?php echo e(asset('storage/uploads/' . $doc->file_name)); ?>" target="_blank" class="btn btn-outline-danger flex-grow-1 fw-bold">
                                     <i class="fas fa-eye me-2"></i>Lihat
                                 </a>
+
                                 
-                                
+                                <?php if(Auth::check() && (Auth::user()->role == 'Admin' || Auth::user()->role == 'Super Admin')): ?>
                                 <form action="<?php echo e(route('media.delete', $doc->media_id)); ?>" method="POST" class="d-inline" onsubmit="return confirm('Hapus file ini permanen?');">
                                     <?php echo csrf_field(); ?>
                                     <?php echo method_field('DELETE'); ?>
@@ -104,10 +116,12 @@
                                         <i class="fas fa-trash-alt"></i>
                                     </button>
                                 </form>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </div>
                 </div>
+
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 
                 <div class="col-12">
@@ -118,7 +132,8 @@
                     </div>
                 </div>
                 <?php endif; ?>
-            </div>
+
+            </div> 
         </div>
     </div>
 </div>

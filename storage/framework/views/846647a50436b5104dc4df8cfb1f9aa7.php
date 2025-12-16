@@ -224,11 +224,18 @@
                     <h3 class="dev-name">Arini Zahira Putri</h3> 
                     <span class="dev-role">NIM: 2457301017</span>
                     <div class="mt-3">
-                        <a href="https://github.com/arinpcr" target="_blank" class="social-btn" title="GitHub"><i class="fab fa-github"></i></a>
-                        <a href="https://www.linkedin.com/" target="_blank" class="social-btn" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-                        <a href="https://www.instagram.com/0.79990/" target="_blank" class="social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="mailto:arini24si@mahasiswa.pcr.ac.id" class="social-btn" title="Email"><i class="fas fa-envelope"></i></a>
-                    </div>
+    
+    <a href="https://github.com/arinpcr" target="_blank" class="social-btn" title="GitHub"><i class="fab fa-github"></i></a>
+    
+    
+    <a href="https://www.linkedin.com/in/arini-zahira-putri-268407394/" target="_blank" class="social-btn" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+    
+    
+    <a href="https://www.instagram.com/0.79990/" target="_blank" class="social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
+    
+    
+    <a href="mailto:Arini24si@mahasiswa.pcr.ac.id" class="social-btn" title="Email"><i class="fas fa-envelope"></i></a>
+</div>
                 </div>
             </div>
         </div>

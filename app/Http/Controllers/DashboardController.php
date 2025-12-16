@@ -23,28 +23,31 @@ class DashboardController extends Controller
      * Menampilkan Dashboard Utama dengan Statistik
      */
     public function index()
-    {
-        // Data Statistik
-        $totalWarga     = Warga::count();
-        $totalKK        = KeluargaKK::count();
-        $totalKematian  = PeristiwaKematian::count();
-        $totalKelahiran = PeristiwaKelahiran::count();
-        $totalPindah    = PeristiwaPindah::count(); 
+{
+    // Data Statistik (Kode ini tetap sama)
+    $totalWarga     = Warga::count();
+    $totalKK        = KeluargaKK::count();
+    $totalKematian  = PeristiwaKematian::count();
+    $totalKelahiran = PeristiwaKelahiran::count();
+    $totalPindah    = PeristiwaPindah::count(); 
 
-        // Statistik Gender
-        $totalLaki      = Warga::where('jenis_kelamin', 'L')->count();
-        $totalPerempuan = Warga::where('jenis_kelamin', 'P')->count();
+    // Statistik Gender
+    $totalLaki      = Warga::where('jenis_kelamin', 'L')->count();
+    $totalPerempuan = Warga::where('jenis_kelamin', 'P')->count();
 
-        return view('pages.dashboard', compact(
-            'totalWarga', 
-            'totalKK', 
-            'totalKematian', 
-            'totalKelahiran', 
-            'totalPindah', 
-            'totalLaki', 
-            'totalPerempuan'
-        ));
-    }
+    // --- PERBAIKAN DI SINI ---
+    // Ubah 'pages.dashboard' menjadi 'guest.dashboard'
+    // sesuai dengan folder yang ada di gambar kamu.
+    return view('guest.dashboard', compact(
+        'totalWarga', 
+        'totalKK', 
+        'totalKematian', 
+        'totalKelahiran', 
+        'totalPindah', 
+        'totalLaki', 
+        'totalPerempuan'
+    ));
+}
 
     /**
      * Menampilkan Halaman Profile

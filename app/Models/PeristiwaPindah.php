@@ -9,9 +9,14 @@ class PeristiwaPindah extends Model
 {
     use HasFactory;
 
+    // 1. Nama Tabel (Sesuai Screenshot HeidiSQL)
     protected $table = 'peristiwa_pindah';
-    protected $primaryKey = 'pindah_id'; 
 
+    // 2. Primary Key (Sesuai Screenshot HeidiSQL)
+    // Penting: Laravel defaultnya nyari 'id', jadi ini wajib ada.
+    protected $primaryKey = 'pindah_id';
+
+    // 3. Kolom yang boleh diisi (Mass Assignment)
     protected $fillable = [
         'warga_id',
         'tgl_pindah',
@@ -20,12 +25,13 @@ class PeristiwaPindah extends Model
         'no_surat'
     ];
 
-    // --- PERBAIKAN ADA DI SINI ---
+    /**
+     * Relasi ke Model Warga
+     * Relasi: BelongsTo (Satu peristiwa pindah milik satu warga)
+     */
     public function warga()
     {
-        // Parameter 1: Model tujuan (Warga)
-        // Parameter 2: Foreign Key di tabel peristiwa_pindah ('warga_id')
-        // Parameter 3: Primary Key di tabel warga ('warga_id') <--- INI KUNCINYA
-        return $this->belongsTo(Warga::class, 'warga_id', 'warga_id'); 
+        // belongsTo(ModelTujuan, ForeignKeyDiTabelIni, PrimaryKeyDiTabelTujuan)
+        return $this->belongsTo(Warga::class, 'warga_id', 'warga_id');
     }
 }

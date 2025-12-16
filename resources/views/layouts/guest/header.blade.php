@@ -6,18 +6,41 @@
                 <small class="me-3"><i class="fas fa-envelope me-2 text-secondary"></i><a href="#" class="text-white">admin@desa.example.com</a></small>
             </div>
             <div class="top-link pe-2">
-                <a href="" class="btn btn-light btn-sm-square rounded-circle"><i class="fab fa-facebook-f text-secondary"></i></a>
-                <a href="" class="btn btn-light btn-sm-square rounded-circle"><i class="fab fa-twitter text-secondary"></i></a>
-                <a href="" class="btn btn-light btn-sm-square rounded-circle"><i class="fab fa-instagram text-secondary"></i></a>
-                <a href="" class="btn btn-light btn-sm-square rounded-circle me-0"><i class="fab fa-linkedin-in text-secondary"></i></a>
-            </div>
+    {{-- 1. GitHub --}}
+    <a href="https://github.com/arinpcr" target="_blank" class="btn btn-light btn-sm-square rounded-circle" title="GitHub">
+        <i class="fab fa-github text-secondary"></i>
+    </a>
+    
+    {{-- 2. Instagram --}}
+    <a href="https://www.instagram.com/0.79990/" target="_blank" class="btn btn-light btn-sm-square rounded-circle" title="Instagram">
+        <i class="fab fa-instagram text-secondary"></i>
+    </a>
+    
+    {{-- 3. WhatsApp --}}
+    <a href="https://wa.me/" target="_blank" class="btn btn-light btn-sm-square rounded-circle" title="WhatsApp">
+        <i class="fab fa-whatsapp text-secondary"></i>
+    </a>
+
+    {{-- 4. LinkedIn --}}
+    <a href="https://www.linkedin.com/in/arini-zahira-putri-268407394/" target="_blank" class="btn btn-light btn-sm-square rounded-circle" title="LinkedIn">
+        <i class="fab fa-linkedin-in text-secondary"></i>
+    </a>
+
+    {{-- 5. Email (Arini) --}}
+    <a href="mailto:Arini24si@mahasiswa.pcr.ac.id" class="btn btn-light btn-sm-square rounded-circle me-0" title="Kirim Email">
+        <i class="fas fa-envelope text-secondary"></i>
+    </a>
+</div>
         </div>
     </div>
     <div class="container px-0">
         <nav class="navbar navbar-light navbar-expand-xl py-3">
-            <a href="{{ url('/') }}" class="navbar-brand">
-                <h1 class="text-primary display-6">Kependudukan</h1>
+            
+            {{-- [PERBAIKAN LOGO: Ukuran disesuaikan (50px) dan padding dihapus (p-0) agar pas di header] --}}
+            <a href="{{ url('/') }}" class="navbar-brand p-0">
+                <img src="{{ asset('assets-guest/img/logo.png') }}" alt="Logo" style="height: 50px; width: auto; object-fit: contain;">
             </a>
+
             <button class="navbar-toggler py-2 px-3" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
                 <span class="fa fa-bars text-primary"></span>
             </button>

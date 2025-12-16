@@ -2,7 +2,7 @@
 
 <?php $__env->startSection('styles'); ?>
 <style>
-    /* CSS WARISAN DARI LOGIN FORM AGAR KONSISTEN */
+    /* KONFIGURASI WARNA UTAMA */
     :root {
         --bs-primary: #ff4880;
         --bs-secondary: #ffb6c1;
@@ -10,8 +10,16 @@
         --bs-dark: #000000;
     }
 
+    /* --- BACKGROUND GAMBAR --- */
     body {
-        background: linear-gradient(135deg, #ffe6f0, #ffc6d9);
+        background: linear-gradient(135deg, rgba(255, 72, 128, 0.8), rgba(255, 198, 217, 0.9)),
+                    url('https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80');
+        
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-repeat: no-repeat;
+        
         font-family: 'Montserrat', sans-serif;
         min-height: 100vh;
         display: flex;
@@ -29,16 +37,17 @@
 
     .register-container {
         width: 100%;
-        max-width: 500px; /* Sedikit lebih lebar dari login karena field lebih banyak */
+        max-width: 500px;
     }
 
     .register-card {
-        background: var(--bs-white);
+        background: rgba(255, 255, 255, 0.95);
         border-radius: 15px;
-        box-shadow: 0 15px 35px rgba(255, 72, 128, 0.1);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
         overflow: hidden;
         border: none;
         transition: transform 0.3s ease;
+        backdrop-filter: blur(5px);
     }
 
     .register-card:hover {
@@ -48,7 +57,7 @@
     .register-header {
         background: linear-gradient(135deg, var(--bs-primary), #ff2d6d);
         color: var(--bs-white);
-        padding: 30px 30px; /* Padding sedikit dikurangi biar ga kepanjangan */
+        padding: 30px;
         text-align: center;
         position: relative;
     }
@@ -73,12 +82,16 @@
         z-index: 2;
     }
 
-    .register-header i {
-        font-size: 2.5rem;
+    /* [UBAH] Style untuk Logo di Header Register */
+    .register-header img {
+        height: 50px; /* Ukuran disamakan dengan header home */
+        width: auto;
         margin-bottom: 10px;
-        display: block;
+        display: inline-block;
         position: relative;
         z-index: 2;
+        object-fit: contain;
+        filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
     }
 
     .register-header small {
@@ -103,11 +116,13 @@
         font-size: 15px;
         font-family: 'Montserrat', sans-serif;
         transition: all 0.3s ease;
+        background-color: #f8f9fa;
     }
 
     .form-control:focus {
         border-color: var(--bs-primary);
         box-shadow: 0 0 0 0.2rem rgba(255, 72, 128, 0.25);
+        background-color: #fff;
     }
 
     .form-label {
@@ -129,12 +144,14 @@
         position: relative;
         overflow: hidden;
         margin-top: 10px;
+        color: white;
     }
 
     .btn-register:hover {
         transform: translateY(-2px);
         box-shadow: 0 8px 25px rgba(255, 72, 128, 0.4);
         background: linear-gradient(135deg, #ff2d6d, var(--bs-primary));
+        color: white;
     }
 
     .register-links {
@@ -210,7 +227,9 @@
 <div class="register-container">
     <div class="register-card">
         <div class="register-header">
-            <i class="fas fa-user-plus"></i>
+            
+            <img src="<?php echo e(asset('assets-guest/img/logo2.png')); ?>" alt="Logo">
+
             <h2>Daftar Akun</h2>
             <small>Bergabung dengan Sistem Kependudukan</small>
         </div>

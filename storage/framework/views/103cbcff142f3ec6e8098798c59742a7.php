@@ -1,8 +1,8 @@
 <div class="container-fluid footer py-5 wow fadeIn" data-wow-delay="0.1s" 
-     style="background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url('<?php echo e(asset('assets-guest/img/footer-baru.jpg')); ?>'); 
-            background-position: center 55%; 
+     style='background: linear-gradient(rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.4)), url("<?php echo e(asset("assets-guest/img/footer-baru.jpg")); ?>"); 
+            background-position: center 65%; 
             background-repeat: no-repeat; 
-            background-size: cover;">
+            background-size: cover;'>
             
     <div class="container py-5">
         <div class="row g-5">
@@ -63,10 +63,30 @@
                         
                         
                         <div class="footer-icon d-flex mt-3">
-                            <a class="btn btn-primary btn-sm-square me-3 rounded-circle text-white shadow-sm" href="https://www.facebook.com/" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                            <a class="btn btn-primary btn-sm-square me-3 rounded-circle text-white shadow-sm" href="https://www.instagram.com/0.79990/" target="_blank"><i class="fab fa-instagram"></i></a>
-                            <a class="btn btn-primary btn-sm-square me-3 rounded-circle text-white shadow-sm" href="https://www.linkedin.com/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-                            <a class="btn btn-primary btn-sm-square rounded-circle text-white shadow-sm" href="mailto:arini24si@mahasiswa.pcr.ac.id"><i class="fas fa-envelope"></i></a>
+                            
+                            <a class="btn btn-primary btn-sm-square me-3 rounded-circle text-white shadow-sm" href="https://github.com/arinpcr" target="_blank" title="GitHub">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            
+                            
+                            <a class="btn btn-primary btn-sm-square me-3 rounded-circle text-white shadow-sm" href="https://www.instagram.com/0.79990/" target="_blank" title="Instagram">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            
+                            
+                            <a class="btn btn-primary btn-sm-square me-3 rounded-circle text-white shadow-sm" href="https://wa.me/" target="_blank" title="WhatsApp">
+                                <i class="fab fa-whatsapp"></i>
+                            </a>
+
+                            
+                            <a class="btn btn-primary btn-sm-square me-3 rounded-circle text-white shadow-sm" href="https://www.linkedin.com/in/arini-zahira-putri-268407394/" target="_blank" title="LinkedIn">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            
+                            
+                            <a class="btn btn-primary btn-sm-square rounded-circle text-white shadow-sm" href="mailto:Arini24si@mahasiswa.pcr.ac.id" title="Kirim Email">
+                                <i class="fas fa-envelope"></i>
+                            </a>
                         </div>
                     </div>
                 </div>

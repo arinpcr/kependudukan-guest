@@ -26,9 +26,8 @@ class PeristiwaPindahController extends Controller
                 })
                 // Cari berdasarkan alamat tujuan
                 ->orWhere('alamat_tujuan', 'like', '%' . $search . '%')
-                // Cari berdasarkan alasan (yang sekarang memuat jenis pindah & asal)
+                // Cari berdasarkan alasan
                 ->orWhere('alasan', 'like', '%' . $search . '%'); 
-                // CATATAN: 'alamat_asal' dihapus dari pencarian karena kolomnya tidak ada
             });
         }
 
@@ -42,9 +41,9 @@ class PeristiwaPindahController extends Controller
             switch ($request->sort) {
                 case 'tgl_terlama': $query->orderBy('tgl_pindah', 'asc'); break;
                 case 'nama_az': 
-                    $query->join('warga', 'peristiwa_pindah.warga_id', '=', 'warga.warga_id') // Sesuaikan PK warga jika 'id' atau 'warga_id'
+                    $query->join('warga', 'peristiwa_pindah.warga_id', '=', 'warga.warga_id')
                           ->orderBy('warga.nama', 'asc')
-                          ->select('peristiwa_pindah.*'); // Penting agar ID tidak tertimpa
+                          ->select('peristiwa_pindah.*'); 
                     break;
                 case 'nama_za': 
                     $query->join('warga', 'peristiwa_pindah.warga_id', '=', 'warga.warga_id')
@@ -65,7 +64,7 @@ class PeristiwaPindahController extends Controller
 
     public function create()
     {
-        // Ambil warga, asumsikan PK warga adalah 'id' atau 'warga_id' sesuaikan dengan model Warga kamu
+        // Sesuaikan 'warga_id' atau 'id' tergantung PK tabel warga kamu
         $warga = Warga::orderBy('nama', 'asc')->get();
         return view('pages.pindah.create', compact('warga'));
     }
@@ -74,7 +73,7 @@ class PeristiwaPindahController extends Controller
     {
         // 1. Validasi Input Form
         $request->validate([
-            'warga_id'      => 'required', // Sesuaikan validasi exists jika perlu
+            'warga_id'      => 'required',
             'tgl_pindah'    => 'required|date',
             'jenis_pindah'  => 'required|string', 
             'alamat_asal'   => 'required|string',
@@ -87,33 +86,28 @@ class PeristiwaPindahController extends Controller
         DB::beginTransaction();
 
         try {
-            // 2. GABUNGKAN DATA (Mapping Manual)
-            // Karena kolom 'jenis_pindah' & 'alamat_asal' TIDAK ADA di DB,
-            // kita simpan infonya ke dalam kolom 'alasan' agar tidak hilang.
+            // 2. Mapping Data ke Kolom Alasan
             $infoLengkap = "Jenis: " . $request->jenis_pindah . " | Asal: " . $request->alamat_asal . " | Ket: " . ($request->alasan ?? '-');
 
-            // 3. Simpan Data ke Database
+            // 3. Simpan Data Pindah
             $pindah = PeristiwaPindah::create([
                 'warga_id'      => $request->warga_id,
                 'tgl_pindah'    => $request->tgl_pindah,
                 'alamat_tujuan' => $request->alamat_tujuan,
-                'alasan'        => $infoLengkap, // Masuk ke sini
+                'alasan'        => $infoLengkap,
                 'no_surat'      => $request->no_surat,
             ]);
 
-            // 4. Update Status Warga (Opsional, uncomment jika butuh)
-            // Warga::where('id', $request->warga_id)->update(['status' => 'Pindah']); 
-            // Pastikan pakai PK yang benar ('id' atau 'warga_id')
-
-            // 5. Upload File
+            // 4. Upload File (Jika ada saat create)
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
                     $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                    // Simpan ke storage/app/public/uploads
                     $path = $file->storeAs('public/uploads', $filename);
 
                     Media::create([
                         'ref_table' => 'peristiwa_pindah',
-                        'ref_id'    => $pindah->pindah_id, // Menggunakan PK pindah_id
+                        'ref_id'    => $pindah->pindah_id, // Pastikan model PeristiwaPindah primary key-nya benar
                         'file_path' => 'uploads/' . $filename,
                         'file_name' => $file->getClientOriginalName(),
                         'mime_type' => $file->getClientMimeType(),
@@ -128,7 +122,6 @@ class PeristiwaPindahController extends Controller
 
         } catch (\Exception $e) {
             DB::rollback();
-            // Tampilkan pesan error spesifik untuk debugging
             return back()->withInput()->withErrors(['msg' => 'Gagal menyimpan: ' . $e->getMessage()]);
         }
     }
@@ -164,9 +157,8 @@ class PeristiwaPindahController extends Controller
         $pindah->update([
             'tgl_pindah'    => $request->tgl_pindah,
             'alamat_tujuan' => $request->alamat_tujuan,
-            'alasan'        => $infoLengkap, // Update kolom alasan
+            'alasan'        => $infoLengkap,
             'no_surat'      => $request->no_surat,
-            // jenis_pindah dan alamat_asal tidak dimasukkan sebagai key array
         ]);
 
         return redirect()->route('pindah.index')->with('success', 'Data berhasil diperbarui.');
@@ -186,5 +178,50 @@ class PeristiwaPindahController extends Controller
         
         $pindah->delete();
         return redirect()->route('pindah.index')->with('success', 'Data berhasil dihapus.');
+    }
+
+    /**
+     * [BARU] Method untuk menangani Upload Dokumen Tambahan (Dari Modal/Detail)
+     */
+    public function storeMedia(Request $request)
+    {
+        // 1. Validasi
+        $request->validate([
+            'ref_id'  => 'required', 
+            // Validasi untuk SINGLE file (tanpa bintang *)
+            'files'   => 'required|file|mimes:jpg,jpeg,png,pdf|max:5120', 
+            'caption' => 'nullable|string|max:255',
+        ]);
+
+        try {
+            // 2. Ambil Data Pindah
+            // Pastikan pakai findOrFail agar kalau ID salah langsung 404, bukan error aneh
+            $pindah = PeristiwaPindah::findOrFail($request->ref_id);
+
+            // 3. Proses Upload
+            if ($request->hasFile('files')) {
+                $file = $request->file('files'); // Ambil file tunggal
+                
+                $filename = time() . '_' . uniqid() . '.' . $file->getClientOriginalExtension();
+                $file->storeAs('public/uploads', $filename);
+
+                // 4. Simpan ke Database Media
+                Media::create([
+                    'ref_table' => 'peristiwa_pindah',
+                    'ref_id'    => $pindah->pindah_id, // Menggunakan ID dari data yang ditemukan
+                    'file_path' => 'uploads/' . $filename,
+                    'file_name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getClientMimeType(),
+                    'caption'   => $request->caption ?? $file->getClientOriginalName(),
+                ]);
+
+                return redirect()->back()->with('success', 'Dokumen pendukung berhasil diunggah!');
+            }
+
+            return redirect()->back()->with('error', 'Tidak ada file yang dipilih.');
+
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal upload: ' . $e->getMessage());
+        }
     }
 }

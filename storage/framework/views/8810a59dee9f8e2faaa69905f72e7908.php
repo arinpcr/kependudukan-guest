@@ -127,7 +127,7 @@
                                     <label class="small text-muted text-uppercase fw-bold">Terakhir Diperbarui</label>
                                     <div class="fs-5 text-dark border-bottom pb-2">
                                         <i class="fas fa-clock me-2 text-primary"></i> 
-                                        <?php echo e(\Carbon\Carbon::parse($user->updated_at)->format('d F Y, H:i')); ?>
+                                        <?php echo e(\Carbon\Carbon::parse($user->updated_at)->format('d F Y')); ?>
 
                                     </div>
                                     <small class="text-muted fst-italic">

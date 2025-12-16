@@ -182,30 +182,31 @@
                     <div class="mt-5 pt-3 border-top">
                         <h6 class="fw-bold mb-3 text-dark small text-uppercase ls-1">Ikuti Kami di Sosial Media:</h6>
                         <div class="social-links">
-                            <a href="https://github.com/arinpcr" target="_blank" class="social-btn" title="GitHub" style="color: #333; border-color: #333;">
-                                <i class="fab fa-github"></i>
-                            </a>
+    {{-- 1. GitHub --}}
+    <a href="https://github.com/arinpcr" target="_blank" class="social-btn" title="GitHub" style="color: #333; border-color: #333;">
+        <i class="fab fa-github"></i>
+    </a>
 
-                            <a href="https://www.instagram.com/0.79990/" target="_blank" class="social-btn" title="Instagram" style="color: #E1306C; border-color: #E1306C;">
-                                <i class="fab fa-instagram"></i>
-                            </a>
+    {{-- 2. Instagram --}}
+    <a href="https://www.instagram.com/0.79990/" target="_blank" class="social-btn" title="Instagram" style="color: #E1306C; border-color: #E1306C;">
+        <i class="fab fa-instagram"></i>
+    </a>
 
-                            <a href="https://wa.me/" target="_blank" class="social-btn" title="WhatsApp" style="color: #25D366; border-color: #25D366;">
-                                <i class="fab fa-whatsapp"></i>
-                            </a>
+    {{-- 3. WhatsApp --}}
+    <a href="https://wa.me/" target="_blank" class="social-btn" title="WhatsApp" style="color: #25D366; border-color: #25D366;">
+        <i class="fab fa-whatsapp"></i>
+    </a>
 
-                            <a href="https://www.facebook.com/" target="_blank" class="social-btn" title="Facebook" style="color: #1877F2; border-color: #1877F2;">
-                                <i class="fab fa-facebook-f"></i>
-                            </a>
+    {{-- 4. LinkedIn --}}
+    <a href="https://www.linkedin.com/in/arini-zahira-putri-268407394/" target="_blank" class="social-btn" title="LinkedIn" style="color: #0077B5; border-color: #0077B5;">
+        <i class="fab fa-linkedin-in"></i>
+    </a>
 
-                            <a href="https://www.linkedin.com/" target="_blank" class="social-btn" title="LinkedIn" style="color: #0077B5; border-color: #0077B5;">
-                                <i class="fab fa-linkedin-in"></i>
-                            </a>
-
-                            <a href="mailto:arini24si@mahasiswa.pcr.ac.id" class="social-btn" title="Email" style="color: #EA4335; border-color: #EA4335;">
-                                <i class="fas fa-envelope"></i>
-                            </a>
-                        </div>
+    {{-- 5. Email (Arini) --}}
+    <a href="mailto:Arini24si@mahasiswa.pcr.ac.id" class="social-btn" title="Email" style="color: #EA4335; border-color: #EA4335;">
+        <i class="fas fa-envelope"></i>
+    </a>
+</div>
                     </div>
                 </div>
             </div>

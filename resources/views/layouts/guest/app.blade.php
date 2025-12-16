@@ -1,38 +1,68 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 
 <head>
     <meta charset="utf-8">
-    <title>@yield('title', 'Kependudukan')</title>
+    <title>@yield('title', 'Sistem Kependudukan Desa')</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="" name="keywords">
-    <meta content="" name="description">
-
-    @extends('layouts.guest.css')
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta content="Sistem Kependudukan, Desa, Data Warga" name="keywords">
+    <meta content="Sistem Kependudukan Desa - Pengelolaan Data Warga Terintegrasi" name="description">
+    
+    <!-- ========== FAVICON ========== -->
+    <!-- Basic ICO -->
+    <link rel="shortcut icon" href="{{ asset('favicon_io/favicon.ico') }}" type="image/x-icon">
+    
+    <!-- PNG Favicons -->
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon_io/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon_io/favicon-16x16.png') }}">
+    
+    <!-- Apple Devices -->
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon_io/apple-touch-icon.png') }}">
+    
+    <!-- Android Chrome -->
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon_io/android-chrome-192x192.png') }}">
+    <link rel="icon" type="image/png" sizes="512x512" href="{{ asset('favicon_io/android-chrome-512x512.png') }}">
+    
+    <!-- Web Manifest (PWA) -->
+    <link rel="manifest" href="{{ asset('favicon_io/site.webmanifest') }}">
+    
+    <!-- Theme Colors -->
+    <meta name="theme-color" content="#ffffff">
+    <meta name="msapplication-TileColor" content="#ffffff">
+    <!-- ========== END FAVICON ========== -->
+    
+    <!-- Include CSS -->
+    @include('layouts.guest.css')
+    
+    <!-- Additional CSS -->
+    @stack('styles')
 </head>
 
 <body>
-    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center">
+    <!-- Spinner -->
+    <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50 d-flex align-items-center justify-content-center" style="z-index: 9999;">
         <div class="spinner-grow text-primary" role="status"></div>
     </div>
 
+    <!-- Header -->
     @include('layouts.guest.header')
 
+    <!-- Main Content -->
     <main>
         @yield('content')
     </main>
 
+    <!-- Footer -->
     @include('layouts.guest.footer')
 
-    <a href="https://wa.me/6281234567890?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20Sistem%20Kependudukan."
+    <!-- WhatsApp Float -->
+    <a href="https://wa.me/?text=Halo%20Admin%2C%20saya%20ingin%20bertanya%20tentang%20Sistem%20Kependudukan."
        class="whatsapp-float" target="_blank" rel="noopener" title="Hubungi kami di WhatsApp">
         <i class="fab fa-whatsapp"></i>
     </a>
 
+    <!-- WhatsApp Button Style -->
     <style>
-        /* Floating WhatsApp Button */
         .whatsapp-float {
             position: fixed;
             width: 60px;
@@ -45,7 +75,7 @@
             text-align: center;
             font-size: 30px;
             box-shadow: 2px 2px 10px rgba(0,0,0,0.3);
-            z-index: 9999;
+            z-index: 999;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -66,6 +96,10 @@
         }
     </style>
 
+    <!-- Include JavaScript -->
     @include('layouts.guest.js')
+    
+    <!-- Additional Scripts -->
+    @stack('scripts')
 </body>
 </html>
