@@ -149,14 +149,3 @@
     </div>
 </div>
 @endsection
-
-@push('styles')
-<style>
-    .title-border-radius {
-        border-radius: 10px;
-    }
-    .img-thumbnail {
-        border-width: 3px;
-    }
-</style>
-@endpush

@@ -157,24 +157,6 @@
 </div>
 @endsection
 
-@push('styles')
-<style>
-    .title-border-radius {
-        border-radius: 10px;
-    }
-    .bg-pink {
-        background-color: #e83e8c !important;
-        color: white !important;
-    }
-    .btn-group .btn {
-        margin: 0 1px;
-    }
-    .card-header {
-        border-bottom: 2px solid rgba(0,0,0,0.1);
-    }
-</style>
-@endpush
-
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {

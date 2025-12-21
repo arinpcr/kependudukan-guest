@@ -261,20 +261,3 @@
     </div>
 </div>
 @endsection
-
-@push('styles')
-<style>
-    .title-border-radius { border-radius: 10px; }
-    .avatar-box {
-        width: 45px; height: 45px; font-size: 1.2rem;
-        border: 2px solid rgba(255,255,255,0.8);
-    }
-    .card-hover { 
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card-hover:hover { 
-        transform: translateY(-5px); 
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; 
-    }
-</style>
-@endpush

@@ -266,39 +266,6 @@
 </div>
 @endsection
 
-@push('styles')
-<style>
-    .title-border-radius {
-        border-radius: 10px;
-    }
-    .bg-pink {
-        background-color: #e83e8c !important;
-        color: white !important;
-    }
-    .anggota-card {
-        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-    }
-    .anggota-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-    }
-    .card-header {
-        border-bottom: 2px solid rgba(255,255,255,0.2);
-    }
-    .btn-group .btn {
-        border-radius: 0;
-        flex: 1;
-    }
-    .btn-group form {
-        flex: 1;
-        display: flex;
-    }
-    .btn-group form button {
-        width: 100%;
-        border-radius: 0;
-    }
-</style>
-@endpush
 
 @push('scripts')
 <script>

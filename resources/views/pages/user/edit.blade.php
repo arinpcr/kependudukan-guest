@@ -165,20 +165,6 @@
 </div>
 @endsection
 
-@push('styles')
-<style>
-    .avatar-upload-container {
-        position: relative;
-    }
-    .avatar-preview {
-        transition: all 0.3s ease;
-    }
-    .avatar-preview:hover {
-        transform: scale(1.05);
-    }
-</style>
-@endpush
-
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {

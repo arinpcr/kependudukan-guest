@@ -102,22 +102,6 @@
 </div>
 @endsection
 
-@push('styles')
-<style>
-    .title-border-radius {
-        border-radius: 10px;
-    }
-    .cursor-pointer {
-        cursor: pointer;
-        z-index: 10; /* Pastikan ikon di atas input */
-    }
-    /* Memberi jarak teks agar tidak tertabrak ikon mata */
-    .password-input {
-        padding-right: 40px; 
-    }
-</style>
-@endpush
-
 @push('scripts')
 <script>
     /**

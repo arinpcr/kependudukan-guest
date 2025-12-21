@@ -209,22 +209,6 @@
     </div>
 </div>
 @endsection
-
-@push('styles')
-<style>
-    .title-border-radius { border-radius: 10px; }
-    
-    .card-hover { 
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    
-    .card-hover:hover { 
-        transform: translateY(-5px); 
-        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important; 
-    }
-</style>
-@endpush
-
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
