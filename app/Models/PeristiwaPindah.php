@@ -15,7 +15,7 @@ class PeristiwaPindah extends Model
     // 2. Primary Key (Sesuai Screenshot HeidiSQL)
     // Penting: Laravel defaultnya nyari 'id', jadi ini wajib ada.
     protected $primaryKey = 'pindah_id';
-
+    protected $guarded = [];
     // 3. Kolom yang boleh diisi (Mass Assignment)
     protected $fillable = [
         'warga_id',

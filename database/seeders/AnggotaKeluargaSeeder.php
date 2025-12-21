@@ -2,27 +2,26 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 use App\Models\AnggotaKeluarga;
 use App\Models\KeluargaKk;
 use App\Models\Warga;
+use Faker\Factory as Faker;
 
 class AnggotaKeluargaSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = \Faker\Factory::create('id_ID');
+        $faker = Faker::create('id_ID');
         
-        // Ambil semua KK
+        // 1. Ambil ID warga yang SUDAH terdaftar di anggota_keluarga (agar tidak duplikat)
+        $wargaSudahMenjadiAnggota = AnggotaKeluarga::pluck('warga_id')->toArray();
+        $wargaSudahMenjadiAnggota = collect($wargaSudahMenjadiAnggota);
+        
         $keluargas = KeluargaKk::all();
         
-        // Kumpulkan semua warga yang sudah menjadi anggota
-        $wargaSudahMenjadiAnggota = collect();
-        
         foreach ($keluargas as $keluarga) {
-            // 1. Kepala keluarga otomatis jadi anggota
+            // 2. Kepala keluarga otomatis jadi anggota (cek dulu apakah sudah ada di tabel)
             if (!$wargaSudahMenjadiAnggota->contains($keluarga->kepala_keluarga_warga_id)) {
                 AnggotaKeluarga::create([
                     'kk_id' => $keluarga->kk_id,
@@ -32,7 +31,7 @@ class AnggotaKeluargaSeeder extends Seeder
                 $wargaSudahMenjadiAnggota->push($keluarga->kepala_keluarga_warga_id);
             }
 
-            // 2. Cari istri untuk kepala keluarga (wanita, belum jadi anggota)
+            // 3. Cari istri (wanita, belum jadi anggota manapun)
             $istri = Warga::where('jenis_kelamin', 'P')
                          ->whereNotIn('warga_id', $wargaSudahMenjadiAnggota)
                          ->inRandomOrder()
@@ -47,14 +46,14 @@ class AnggotaKeluargaSeeder extends Seeder
                 $wargaSudahMenjadiAnggota->push($istri->warga_id);
             }
 
-            // 3. Tambahkan anggota lain (anak, orang tua, dll)
-            $jumlahAnggotaLain = $faker->numberBetween(1, 5); // Maksimal 5 anggota lain
+            // 4. Tambahkan anggota lain (anak, dll)
+            $jumlahAnggotaLain = $faker->numberBetween(1, 4); 
             $wargaBelumAnggota = Warga::whereNotIn('warga_id', $wargaSudahMenjadiAnggota)
                                     ->inRandomOrder()
                                     ->take($jumlahAnggotaLain)
                                     ->get();
 
-            $hubunganOptions = ['anak', 'anak', 'anak', 'orang_tua', 'cucu', 'lainnya'];
+            $hubunganOptions = ['anak', 'anak', 'orang_tua', 'cucu'];
             
             foreach ($wargaBelumAnggota as $warga) {
                 AnggotaKeluarga::create([
@@ -66,10 +65,6 @@ class AnggotaKeluargaSeeder extends Seeder
             }
         }
 
-        // 4. Pastikan masih ada warga yang tidak menjadi anggota (untuk testing)
-        $this->command->info('Total warga yang menjadi anggota: ' . $wargaSudahMenjadiAnggota->count());
-        $totalWarga = Warga::count();
-        $this->command->info('Total warga tersedia: ' . $totalWarga);
-        $this->command->info('Warga belum menjadi anggota: ' . ($totalWarga - $wargaSudahMenjadiAnggota->count()));
+        $this->command->info('Seeding Anggota Keluarga selesai!');
     }
 }

@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\PeristiwaKelahiran;
+use App\Models\PeristiwaKematian;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -12,8 +14,10 @@ class DatabaseSeeder extends Seeder
             WargaSeeder::class,
             KeluargaKKSeeder::class,
             AnggotaKeluargaSeeder::class,
-            UserSeeder::class,
-            // Tambahkan seeder lain jika ada
+            PeristiwaKelahiranSeeder::class,
+            PeristiwaKematianSeeder::class,
+            PeristiwaPindahSeeder::class,
+            
         ]);
     }
 }

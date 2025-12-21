@@ -11,7 +11,7 @@ class PeristiwaKematian extends Model
 
     protected $table = 'peristiwa_kematian';
     protected $primaryKey = 'kematian_id';
-
+    protected $guarded = [];
     protected $fillable = [
         'warga_id',
         'nik', // <--- DITAMBAHKAN
