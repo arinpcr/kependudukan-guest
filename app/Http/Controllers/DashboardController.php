@@ -4,50 +4,50 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
-// 1. Grouping Facades (Bawaan Laravel)
 use Illuminate\Support\Facades\{Auth, Hash, Storage};
-
-// 2. Grouping Models (Agar hemat baris)
-use App\Models\{
-    Warga,
-    KeluargaKK,
-    PeristiwaKematian,
-    PeristiwaKelahiran,
-    PeristiwaPindah,
-    User
-};
+use App\Models\{Warga, KeluargaKk, PeristiwaKematian, PeristiwaKelahiran, PeristiwaPindah, User};
 
 class DashboardController extends Controller
 {
     /**
-     * Menampilkan Dashboard Utama dengan Statistik
+     * Menampilkan Dashboard / Laporan Statistik
      */
     public function index()
-{
-    // Data Statistik (Kode ini tetap sama)
-    $totalWarga     = Warga::count();
-    $totalKK        = KeluargaKK::count();
-    $totalKematian  = PeristiwaKematian::count();
-    $totalKelahiran = PeristiwaKelahiran::count();
-    $totalPindah    = PeristiwaPindah::count(); 
+    {
+        // 1. Data Statistik Utama (Card)
+        $totalWarga     = Warga::count();
+        $totalKK        = KeluargaKk::count(); // Sesuaikan nama Model (KeluargaKk)
+        $totalKematian  = PeristiwaKematian::count();
+        $totalKelahiran = PeristiwaKelahiran::count();
+        $totalPindah    = PeristiwaPindah::count(); 
 
-    // Statistik Gender
-    $totalLaki      = Warga::where('jenis_kelamin', 'L')->count();
-    $totalPerempuan = Warga::where('jenis_kelamin', 'P')->count();
+        // 2. Statistik Gender (Variabel disamakan dengan Blade: $laki, $perempuan)
+        $laki      = Warga::where('jenis_kelamin', 'L')->count();
+        $perempuan = Warga::where('jenis_kelamin', 'P')->count();
 
-    // --- PERBAIKAN DI SINI ---
-    // Ubah 'pages.dashboard' menjadi 'guest.dashboard'
-    // sesuai dengan folder yang ada di gambar kamu.
-    return view('guest.dashboard', compact(
-        'totalWarga', 
-        'totalKK', 
-        'totalKematian', 
-        'totalKelahiran', 
-        'totalPindah', 
-        'totalLaki', 
-        'totalPerempuan'
-    ));
-}
+        // 3. Data Grafik Peristiwa (12 Bulan Terakhir)
+        $dataKelahiranBulanan = [];
+        $dataKematianBulanan  = [];
+        $dataPindahanBulanan  = [];
+
+        for ($m = 1; $m <= 12; $m++) {
+            $dataKelahiranBulanan[] = PeristiwaKelahiran::whereMonth('tgl_lahir', $m)
+                                        ->whereYear('tgl_lahir', date('Y'))->count();
+            
+            $dataKematianBulanan[]  = PeristiwaKematian::whereMonth('tgl_meninggal', $m)
+                                        ->whereYear('tgl_meninggal', date('Y'))->count();
+                                        
+            $dataPindahanBulanan[]  = PeristiwaPindah::whereMonth('tgl_pindah', $m)
+                                        ->whereYear('tgl_pindah', date('Y'))->count();
+        }
+
+        // 4. Return View (Gunakan folder guest jika itu dashboard tamu)
+        return view('guest.dashboard', compact(
+            'totalWarga', 'totalKK', 'totalKematian', 'totalKelahiran', 'totalPindah', 
+            'laki', 'perempuan',
+            'dataKelahiranBulanan', 'dataKematianBulanan', 'dataPindahanBulanan'
+        ));
+    }
 
     /**
      * Menampilkan Halaman Profile
@@ -82,11 +82,12 @@ class DashboardController extends Controller
         $user->email = $request->email;
 
         if ($request->hasFile('avatar')) {
-            // Hapus avatar lama
+            // Hapus avatar lama jika ada (Kecuali default)
             if ($user->avatar && Storage::disk('public')->exists('avatars/' . $user->avatar)) {
                 Storage::disk('public')->delete('avatars/' . $user->avatar);
             }
-            // Simpan avatar baru
+            
+            // Simpan file dengan nama asli atau random
             $path = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = basename($path);
         }
