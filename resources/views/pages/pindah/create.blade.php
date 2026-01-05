@@ -35,9 +35,9 @@
                         @endif
 
                         {{-- Alert Error System --}}
-                        @if (session('error'))
+                        @if (session('msg'))
                             <div class="alert alert-danger alert-dismissible fade show">
-                                <strong>Error Sistem:</strong> {{ session('error') }}
+                                <strong>Error Sistem:</strong> {{ session('msg') }}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         @endif
@@ -118,15 +118,16 @@
                                     <input type="text" name="no_surat" class="form-control" placeholder="Contoh: 470/015/Desa/2025" value="{{ old('no_surat') }}">
                                 </div>
 
-                                {{-- 6. UPLOAD FILE --}}
+                                {{-- 6. UPLOAD FILE (MULTIPLE) --}}
                                 <div class="col-12">
                                     <div class="p-3 bg-light border rounded mt-2">
                                         <label class="form-label fw-bold text-primary">
                                             <i class="fas fa-paperclip me-1"></i> Upload Bukti / Surat Pindah
                                         </label>
+                                        {{-- Perhatikan name="files[]" dan multiple --}}
                                         <input type="file" name="files[]" class="form-control @error('files.*') is-invalid @enderror" multiple accept=".jpg,.jpeg,.png,.pdf">
                                         <div class="form-text">
-                                            <i class="fas fa-info-circle"></i> Bisa upload banyak file (KTP, KK, Surat Pengantar). Max: 2MB per file.
+                                            <i class="fas fa-info-circle"></i> Bisa upload banyak file sekaligus (KTP, KK, Surat Pengantar). Max: 2MB per file.
                                         </div>
                                         @error('files.*')
                                             <div class="text-danger small mt-1">{{ $message }}</div>

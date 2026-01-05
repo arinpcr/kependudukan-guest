@@ -6,33 +6,28 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('peristiwa_kematian', function (Blueprint $table) {
-            $table->id('kematian_id'); // PK
+            // 1. Primary Key
+            $table->id('kematian_id');
 
-            $table->unsignedBigInteger('warga_id'); // Relasi ke warga
+            // 2. Foreign Key
+            $table->unsignedBigInteger('warga_id');
 
-            // Cukup tulis di bawah warga_id, otomatis urutannya setelah warga_id
-            $table->string('nik');
-
+            // 3. Kolom Data (Sesuai ERD Dosen)
             $table->date('tgl_meninggal');
-            $table->string('sebab_kematian')->nullable();
-            $table->string('tempat_kematian')->nullable();
-            $table->text('keterangan')->nullable();
+            $table->string('sebab');   // Dulu: sebab_kematian
+            $table->string('lokasi');  // Dulu: tempat_kematian
+            $table->string('no_surat')->nullable(); // BARU
+
             $table->timestamps();
 
-            // Foreign key
+            // Relasi
             $table->foreign('warga_id')->references('warga_id')->on('warga')->onDelete('cascade');
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('peristiwa_kematian');

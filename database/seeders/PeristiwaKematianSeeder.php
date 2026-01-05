@@ -2,34 +2,36 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\Warga;
 use App\Models\PeristiwaKematian;
+use App\Models\Warga;
+use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
 
 class PeristiwaKematianSeeder extends Seeder
 {
-    public function run(): void
+    public function run()
     {
         $faker = Faker::create('id_ID');
 
-        // Ambil 30 warga acak
-        $wargaList = Warga::inRandomOrder()->limit(30)->get();
+        // Ambil 10 warga secara acak untuk dijadikan data simulasi kematian
+        // Pastikan ada data di tabel warga dulu sebelum menjalankan ini
+        $listWarga = Warga::inRandomOrder()->limit(30)->get();
 
-        foreach ($wargaList as $warga) {
+        foreach ($listWarga as $warga) {
             PeristiwaKematian::create([
-                'warga_id'        => $warga->warga_id,
+                'warga_id'      => $warga->warga_id,
                 
-                // PERBAIKAN DI SINI:
-                // Jika $warga->nik kosong, kita generate NIK dummy 16 digit
-                'nik'             => $warga->nik ?? $faker->numerify('16##############'),
+                // Kolom Baru (Sesuai ERD Dosen)
+                'tgl_meninggal' => $faker->dateTimeBetween('-5 years', 'now')->format('Y-m-d'),
+                'sebab'         => $faker->randomElement(['Sakit Tua', 'Serangan Jantung', 'Kecelakaan', 'Demam Berdarah', 'Sakit']),
+                'lokasi'        => $faker->randomElement(['Rumah Duka', 'RSUD Arifin Achmad', 'Puskesmas Desa', 'RS Awal Bros']),
+                'no_surat'      => 'SKM/' . $faker->numerify('202#/###/DESA'),
                 
-                'tgl_meninggal'   => $faker->dateTimeBetween('-5 years', 'now'),
-                'sebab_kematian'  => $faker->randomElement(['Sakit', 'Kecelakaan', 'Faktor Usia', 'Wabah']),
-                'tempat_kematian' => $faker->randomElement(['Rumah', 'Rumah Sakit', 'Puskesmas', 'Luar Kota']),
-                'keterangan'      => $faker->sentence(),
-                'created_at'      => now(),
-                'updated_at'      => now(),
+                // Kolom Lama (HAPUS atau KOMENTARI bagian ini agar tidak error)
+                // 'nik' => ..., 
+                // 'sebab_kematian' => ...,
+                // 'tempat_kematian' => ...,
+                // 'keterangan' => ...,
             ]);
         }
     }

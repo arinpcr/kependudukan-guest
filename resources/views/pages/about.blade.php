@@ -15,34 +15,39 @@
 
 <div class="container pb-5">
     
+    {{-- PROFILE CARD --}}
     <div class="row align-items-center justify-content-center mb-5">
         <div class="col-lg-4 col-md-5 mb-4 mb-md-0 wow fadeInLeft" data-wow-delay="0.3s">
             <div class="dev-card mx-auto" style="max-width: 350px;">
                 <div class="dev-img-wrapper">
                     <img src="{{ asset('assets-guest/img/foto-saya.jpg') }}" 
                          alt="Foto Pengembang"
-                         onerror="this.src='https://ui-avatars.com/api/?name=Arin&size=500&background=ff4880&color=fff'">
+                         onerror="this.src='https://ui-avatars.com/api/?name=Arini&size=500&background=ff4880&color=fff'">
                 </div>
                 <div class="dev-info">
                     <h3 class="dev-name">Arini Zahira Putri</h3> 
                     <span class="dev-role">NIM: 2457301017</span>
-                    <div class="mt-3">
-    {{-- GitHub --}}
-    <a href="https://github.com/arinpcr" target="_blank" class="social-btn" title="GitHub"><i class="fab fa-github"></i></a>
-    
-    {{-- LinkedIn --}}
-    <a href="https://www.linkedin.com/in/arini-zahira-putri-268407394/" target="_blank" class="social-btn" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-    
-    {{-- Instagram --}}
-    <a href="https://www.instagram.com/0.79990/" target="_blank" class="social-btn" title="Instagram"><i class="fab fa-instagram"></i></a>
-    
-    {{-- Email (Arini) --}}
-    <a href="mailto:Arini24si@mahasiswa.pcr.ac.id" class="social-btn" title="Email"><i class="fas fa-envelope"></i></a>
-</div>
+                    
+                    {{-- Social Media Buttons --}}
+                    <div class="dev-social mt-3">
+                        <a href="https://github.com/arinpcr" target="_blank" class="social-btn-round" title="GitHub">
+                            <i class="fab fa-github"></i>
+                        </a>
+                        <a href="https://www.linkedin.com/in/arini-zahira-putri-268407394/" target="_blank" class="social-btn-round" title="LinkedIn">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                        <a href="https://www.instagram.com/0.79990/" target="_blank" class="social-btn-round" title="Instagram">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="mailto:Arini24si@mahasiswa.pcr.ac.id" class="social-btn-round" title="Email">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
 
+        {{-- BIO CONTENT --}}
         <div class="col-lg-6 col-md-7 wow fadeInRight" data-wow-delay="0.4s">
             <div class="bio-content">
                 <h2 class="bio-title">Tentang Sistem</h2>
@@ -71,6 +76,7 @@
 
     <hr class="my-5" style="border-top: 1px dashed #ddd;">
 
+    {{-- MODUL TITLE --}}
     <div class="text-center mb-5 wow fadeInUp" data-wow-delay="0.1s">
         <h4 class="text-primary fw-bold text-uppercase ls-1">Modul & Fungsionalitas</h4>
         <h2 class="fw-bold">Fitur Utama Sistem</h2>
@@ -79,6 +85,7 @@
         </p>
     </div>
 
+    {{-- MODUL CARDS --}}
     <div class="row g-4 mb-5">
         <div class="col-md-6 col-lg-3 wow fadeInUp" data-wow-delay="0.2s">
             <div class="feature-minimal-card">
@@ -118,10 +125,13 @@
         </div>
     </div>
 
+    {{-- FLOWCHART --}}
     <div class="row justify-content-center mb-5 wow fadeInUp" data-wow-delay="0.6s">
         <div class="col-lg-10">
             <div class="flow-container">
                 <div class="row align-items-center">
+                    
+                    {{-- Left: Text Steps --}}
                     <div class="col-md-5 mb-4 mb-md-0">
                         <h4 class="fw-bold mb-3 text-dark">Alur Kerja Sistem</h4>
                         <p class="text-muted mb-4">
@@ -151,18 +161,22 @@
                         </div>
                     </div>
 
+                    {{-- Right: Image Diagram --}}
                     <div class="col-md-7 text-center">
                         <div class="p-3 bg-light rounded-3 border">
+                            {{-- PERBAIKAN DI SINI: Added class w-100 dan object-fit --}}
                             <img src="{{ asset('assets-guest/img/flow-kependudukan.png') }}" 
-                                 class="img-fluid rounded shadow-sm" 
-                                 style="max-height: 400px; width: auto;"
+                                 class="img-fluid rounded shadow-sm w-100" 
+                                 style="max-height: 400px; width: 100%; object-fit: contain;"
                                  alt="Diagram Alur Sistem"
                                  onerror="this.style.display='none'">
+                            
                             <p class="text-muted small mt-2 fst-italic mb-0" onerror="this.style.display='block'">
                                 *Diagram alur data sistem informasi kependudukan
                             </p>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>

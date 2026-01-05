@@ -14,7 +14,7 @@ class PeristiwaPindahSeeder extends Seeder
         $faker = Faker::create('id_ID');
 
         // Ambil 30 warga acak
-        $wargaList = Warga::inRandomOrder()->limit(30)->get();
+        $wargaList = Warga::inRandomOrder()->limit(100)->get();
 
         foreach ($wargaList as $warga) {
             PeristiwaPindah::create([

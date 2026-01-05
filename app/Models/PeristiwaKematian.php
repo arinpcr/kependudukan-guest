@@ -11,17 +11,16 @@ class PeristiwaKematian extends Model
 
     protected $table = 'peristiwa_kematian';
     protected $primaryKey = 'kematian_id';
-    protected $guarded = [];
+    
+    // Sesuaikan fillable dengan kolom baru
     protected $fillable = [
         'warga_id',
-        'nik', // <--- DITAMBAHKAN
         'tgl_meninggal',
-        'sebab_kematian',
-        'tempat_kematian',
-        'keterangan'
+        'sebab',
+        'lokasi',
+        'no_surat'
     ];
 
-    // Relasi ke Warga (Untuk ambil nama Almarhum)
     public function warga()
     {
         return $this->belongsTo(Warga::class, 'warga_id', 'warga_id');

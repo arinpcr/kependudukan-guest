@@ -15,7 +15,7 @@ class WargaController extends Controller
         // Query dasar
         $query = Warga::query();
 
-        // Pencarian
+        // Pencarian (Berfungsi untuk pencarian dari Header juga)
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
             $query->where(function($q) use ($search) {

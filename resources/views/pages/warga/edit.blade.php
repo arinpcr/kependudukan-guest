@@ -37,13 +37,13 @@
                         <div class="row g-4">
                             <div class="col-12">
                                 <div class="form-floating">
-                                    <input type="text" class="form-control @error('no_ktp') is-invalid @enderror" 
-                                           name="no_ktp" id="no_ktp" value="{{ old('no_ktp', $warga->no_ktp) }}" 
-                                           placeholder="Nomor KTP" required>
-                                    <label for="no_ktp">
-                                        <i class="fas fa-id-card me-2 text-primary"></i>Nomor KTP
+                                    <input type="text" class="form-control @error('no_nik') is-invalid @enderror" 
+                                           name="no_nik" id="no_nik" value="{{ old('no_nik', $warga->no_nik) }}" 
+                                           placeholder="Nomor NIK" required>
+                                    <label for="no_nik">
+                                        <i class="fas fa-id-card me-2 text-primary"></i>Nomor NIK
                                     </label>
-                                    @error('no_ktp')
+                                    @error('no_nik')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
@@ -158,16 +158,16 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Format KTP number input (16 digit)
-        const ktpInput = document.getElementById('no_ktp');
-        if (ktpInput) {
-            ktpInput.addEventListener('input', function(e) {
+        // Format NIK number input (16 digit)
+        const nikInput = document.getElementById('no_nik');
+        if (nikInput) {
+            nikInput.addEventListener('input', function(e) {
                 this.value = this.value.replace(/[^0-9]/g, '');
             });
             
-            ktpInput.addEventListener('blur', function() {
+            nikInput.addEventListener('blur', function() {
                 if (this.value.length !== 16 && this.value.length > 0) {
-                    showToast('Nomor KTP harus terdiri dari 16 digit');
+                    showToast('Nomor NIK harus terdiri dari 16 digit');
                     this.focus();
                 }
             });

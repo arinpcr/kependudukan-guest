@@ -8,20 +8,22 @@ return new class extends Migration
 {
     public function up()
     {
+        // Pastikan nama tabel di sini 'peristiwa_pindah' (sesuai Model)
         Schema::create('peristiwa_pindah', function (Blueprint $table) {
-            // Primary Key sesuai gambar
+            
+            // 1. Primary Key (Sesuai ERD Dosen)
             $table->id('pindah_id'); 
             
-            // Foreign Key ke tabel warga
+            // 2. Foreign Key ke tabel warga
             $table->foreignId('warga_id')
                   ->constrained('warga', 'warga_id')
                   ->onDelete('cascade'); 
             
-            // Kolom Data sesuai gambar
+            // 3. Kolom Data
             $table->date('tgl_pindah');
             $table->text('alamat_tujuan');
-            $table->string('alasan')->nullable();
-            $table->string('no_surat')->nullable(); // Kolom baru sesuai gambar
+            $table->string('alasan')->nullable(); // Gabungan Jenis|Asal|Ket
+            $table->string('no_surat')->nullable(); // Kolom baru
             
             $table->timestamps();
         });

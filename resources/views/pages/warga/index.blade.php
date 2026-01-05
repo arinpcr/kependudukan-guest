@@ -124,9 +124,9 @@
                                     <div class="mb-3">
                                         <div class="d-flex align-items-center mb-2">
                                             <i class="fas fa-id-card me-2 text-primary"></i>
-                                            <span class="fw-bold">No KTP:</span>
+                                            <span class="fw-bold">No NIK:</span>
                                         </div>
-                                        <p class="ms-4 mb-0">{{ $item->no_ktp }}</p>
+                                        <p class="ms-4 mb-0">{{ $item->no_nik }}</p>
                                     </div>
                                     
                                     <hr>

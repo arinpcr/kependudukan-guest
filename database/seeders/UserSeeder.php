@@ -42,8 +42,8 @@ class UserSeeder extends Seeder
         );
     }
 
-    // 2. Buat Dummy Data Tambahan (Opsional)
-    // \App\Models\User::factory(20)->create(); 
+    //2. Buat Dummy Data Tambahan (Opsional)
+    \App\Models\User::factory(20)->create(); 
 
     $this->command->info('User Seeder Selesai.');
 }
